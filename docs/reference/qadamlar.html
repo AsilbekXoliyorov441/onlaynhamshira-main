@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Onlayn Hamshira — 4 qadam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17293B; --muted:#5B6B7B; --line:#E6ECF1; --bg:#FFFFFF; --soft:#F5F8FA;
+  --g1:#55DB6B; --g2:#1FB6EE; --grad:linear-gradient(90deg,var(--g1),var(--g2));
+  --c1:#FCE8DA; --c2:#D6EEF9; --c3:#E9DFFB; --c4:#D8F5DE;
+  /* app (always light, like the real app) */
+  --app-bg:#F6F8FA; --app-ink:#1E2328; --app-line:#E7EAEE; --app-muted:#6E7781;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ink:#EAF1F6; --muted:#9FB0BF; --line:#24374A; --bg:#0F1C28; --soft:#152636;
+  --c1:#3A2A20; --c2:#18334A; --c3:#2B2446; --c4:#17362A;
+}}
+:root[data-theme="dark"]{
+  --ink:#EAF1F6; --muted:#9FB0BF; --line:#24374A; --bg:#0F1C28; --soft:#152636;
+  --c1:#3A2A20; --c2:#18334A; --c3:#2B2446; --c4:#17362A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--g2);outline-offset:3px;border-radius:12px}
+
+.how{max-width:1180px;margin:0 auto;padding:72px 24px 80px}
+.head{text-align:center;max-width:640px;margin:0 auto 48px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:#DDF7E6;color:#178A4A;font-weight:600;font-size:14px}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:#23A95A}
+h2{font-size:clamp(32px,4.6vw,52px);line-height:1.05;letter-spacing:-.03em;margin:16px 0 14px;font-weight:800}
+.sub{color:var(--muted);font-size:18px;margin:0}
+.stage{display:grid;grid-template-columns:1fr 420px;gap:56px;align-items:center}
+
+/* ---------- step list ---------- */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.step{position:relative;width:100%;text-align:left;border:0;cursor:pointer;background:transparent;border-radius:24px;padding:20px 22px 22px 84px;transition:background .35s ease}
+.step:hover{background:var(--soft)}
+.step .num{position:absolute;left:22px;top:18px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--soft);color:var(--muted);transition:background .35s,color .35s,transform .35s}
+.step .done{display:none}
+.step.past .num{background:#DDF7E6;color:#178A4A}
+.step.past .num span{display:none}.step.past .done{display:block}
+.step h3{margin:8px 0 0;font-size:21px;letter-spacing:-.01em;font-weight:700;color:var(--muted);transition:color .3s}
+.step .desc{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease}
+.step .desc>div{overflow:hidden}
+.step .desc p{margin:8px 0 0;color:var(--muted);line-height:1.55;font-size:16px;max-width:46ch}
+.step .bar{display:block;height:4px;border-radius:4px;background:rgba(23,41,59,.08);margin-top:16px;overflow:hidden;opacity:0;transition:opacity .3s}
+.step .bar i{display:block;height:100%;width:0;background:var(--grad);border-radius:inherit}
+.step.active{background:var(--tint)}
+.step.active h3{color:var(--ink)}
+.step.active .num{background:var(--bg);color:var(--ink);transform:scale(1.06);box-shadow:0 6px 16px rgba(23,41,59,.08)}
+.step.active .desc{grid-template-rows:1fr}
+.step.active .bar{opacity:1}
+.step.active .bar i{animation:fill var(--dur,6s) linear forwards}
+.how.paused .step.active .bar i{animation-play-state:paused}
+@keyframes fill{to{width:100%}}
+.step[data-i="0"]{--tint:var(--c1)}.step[data-i="1"]{--tint:var(--c2)}
+.step[data-i="2"]{--tint:var(--c3)}.step[data-i="3"]{--tint:var(--c4)}
+.stores{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.stores a{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:600}
+.stores svg{width:15px;height:15px;fill:currentColor}
+
+/* ---------- device ---------- */
+.device-wrap{position:relative;display:grid;place-items:center}
+.blob{position:absolute;inset:4% 0;border-radius:52px;background:var(--blob,var(--c1));transition:background .6s ease;transform:rotate(-4deg)}
+.phone{position:relative;width:310px;height:650px;border-radius:48px;background:#15212D;padding:10px;box-shadow:0 40px 80px -30px rgba(23,41,59,.5)}
+.phone::before{content:"";position:absolute;top:19px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:#000;z-index:9}
+.box{position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:var(--app-bg);color:var(--app-ink);font-size:13px;isolation:isolate}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateX(26px);transition:opacity .45s ease,transform .45s ease;pointer-events:none;background:var(--app-bg)}
+.screen.active{opacity:1;transform:none}
+.screen.leave{transform:translateX(-26px)}
+.sb{height:34px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:4px 20px 0;font-size:11.5px;font-weight:700}
+.sb .ic{display:flex;gap:5px;align-items:center}
+.sb .bat{width:22px;height:11px;border-radius:4px;background:currentColor;opacity:.85}
+.tapdot{position:absolute;z-index:20;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:rgba(31,182,238,.28);border:2px solid rgba(31,182,238,.9);opacity:0;pointer-events:none}
+.tapdot.go{animation:tap .7s ease-out}
+@keyframes tap{0%{opacity:0;transform:scale(1.4)}30%{opacity:1;transform:scale(.8)}100%{opacity:0;transform:scale(1.9)}}
+.pressed{transform:scale(.96)!important;transition:transform .12s}
+.gbtn{height:42px;border-radius:99px;border:0;background:var(--grad);color:#fff;font-weight:600;font-size:15px;display:grid;place-items:center;flex:none;transition:transform .15s}
+.gtext{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hdr{display:flex;align-items:center;padding:10px 14px 14px;font-weight:700;font-size:14px}
+.hdr svg{width:18px;height:18px;flex:none}
+.hdr span{flex:1;text-align:center;margin-right:18px}
+.card{background:#fff;border-radius:14px;margin:0 12px;padding:14px;box-shadow:0 2px 10px rgba(20,30,40,.04)}
+
+/* s1 — Play Store */
+#s0{background:#131314;color:#E3E3E3}
+.ps-top{display:flex;justify-content:space-between;padding:12px 16px 0}
+.ps-top svg{width:18px;height:18px;stroke:#E3E3E3}
+.ps-app{display:flex;gap:14px;align-items:center;padding:22px 18px 0}
+.ps-icon{position:relative;width:62px;height:62px;flex:none}
+.ps-icon .ic{position:absolute;inset:0;border-radius:16px;background:#fff;display:grid;place-items:center;transition:transform .4s,border-radius .4s}
+.ps-icon svg.logo{width:50px;height:50px}
+.ps-icon .ring{position:absolute;inset:-6px;width:74px;height:74px;transform:rotate(-90deg);opacity:0;transition:opacity .3s}
+.ps-icon .ring circle{fill:none;stroke:#A8C7FA;stroke-width:3;stroke-dasharray:220;stroke-dashoffset:220;stroke-linecap:round}
+#s0[data-st="loading"] .ps-icon .ring{opacity:1}
+#s0[data-st="loading"] .ps-icon .ic{transform:scale(.78);border-radius:50%}
+.ps-name{font-size:19px;font-weight:500;line-height:1.15}
+.ps-dev{color:#A8C7FA;font-size:11.5px;margin-top:4px;font-weight:500}
+.ps-pct{color:#C4C7C5;font-size:11px;margin-top:4px;display:none}
+#s0[data-st="loading"] .ps-dev{display:none}#s0[data-st="loading"] .ps-pct{display:block}
+.ps-stats{display:grid;grid-template-columns:repeat(3,1fr);margin:22px 12px 0;text-align:center;font-size:10.5px;color:#C4C7C5}
+.ps-stats div+div{border-left:1px solid #444}
+.ps-stats b{display:block;color:#E3E3E3;font-size:13px;margin-bottom:3px;font-weight:600}
+.ps-btns{display:flex;gap:8px;margin:22px 16px 0;height:36px}
+.ps-btns button{flex:1;border-radius:99px;font-size:13px;font-weight:600;border:1px solid #8E918F;background:transparent;color:#A8C7FA;display:none;transition:transform .15s}
+.ps-btns .fill{background:#A8C7FA;color:#062E6F;border-color:#A8C7FA}
+.ps-btns .dis{background:#2A2A2B;color:#777;border-color:#2A2A2B}
+#s0[data-st="idle"] .b-install,#s0[data-st="loading"] .b-cancel,#s0[data-st="loading"] .b-open-dis,#s0[data-st="done"] .b-un,#s0[data-st="done"] .b-open{display:block}
+.ps-rate{padding:24px 18px 0}
+.ps-rate h4{margin:0;font-size:15px;font-weight:500}
+.ps-rate p{margin:3px 0 12px;color:#C4C7C5;font-size:11px}
+.ps-stars{display:flex;justify-content:space-between;color:#8E918F;font-size:22px;padding-right:6px}
+.ps-about{padding:26px 18px 0;font-size:17px;line-height:1.3;color:#E3E3E3}
+
+/* s2 — register */
+.subs{position:relative;flex:1}
+.subp{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .45s ease,opacity .45s}
+.subp.b{transform:translateX(100%);opacity:0}
+#s1.code-view .subp.a{transform:translateX(-30%);opacity:0}
+#s1.code-view .subp.b{transform:none;opacity:1}
+.sheet-top{height:10px;margin:0 14px;border-radius:12px 12px 0 0;background:#E4E6E8;flex:none}
+.sheet{flex:1;display:flex;flex-direction:column;background:var(--app-bg);border-radius:16px 16px 0 0;margin-top:-4px;padding-bottom:18px}
+.lbl{font-size:12.5px;margin:14px 0 8px}
+.inp{display:flex;align-items:center;height:42px;border:1.5px solid var(--app-line);border-radius:12px;padding:0 12px;font-size:14px;transition:border-color .3s}
+.inp.focus{border-color:var(--g2)}
+.inp .cc{padding-right:10px;margin-right:10px;border-right:1.5px solid #9AA1A8}
+.caret{display:inline-block;width:2px;height:18px;background:var(--g2);margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.agree{display:flex;gap:10px;margin-top:14px;font-size:11.5px;line-height:1.45}
+.chkb{width:18px;height:18px;border-radius:5px;background:var(--grad);display:grid;place-items:center;flex:none;margin-top:6px}
+.agree .gtext{font-weight:500}
+.btns{margin:auto 12px 0;display:flex;flex-direction:column;gap:8px}
+.obtn{height:42px;border-radius:99px;border:1.5px solid var(--app-line);background:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:13px;color:#1F9FE0}
+.tg{width:20px;height:20px;border-radius:50%;background:#2AA3E0;display:grid;place-items:center}
+.otp-t{font-weight:700;font-size:14px;line-height:1.3}
+.otp-n{text-align:center;font-weight:700;font-size:15px;margin:8px 0 14px}
+.otp{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.otp span{height:40px;border-radius:10px;border:1.5px solid var(--app-line);display:grid;place-items:center;font-size:17px;transition:border-color .2s,transform .2s}
+.otp span.on{border-color:var(--g2);transform:translateY(-2px)}
+.resend{text-align:center;color:var(--app-muted);font-size:12px;margin-top:12px}
+.spin{width:20px;height:20px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:rot .8s linear infinite;display:none}
+.gbtn.loading .spin{display:block}.gbtn.loading .t{display:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* s3 — services */
+.sec-t{font-weight:700;font-size:15px;margin:2px 14px 10px}
+.call{font-size:13px}
+.call .gtext{display:inline-block;font-weight:600;font-size:15px;margin-top:4px}
+.svc-wrap{margin-top:10px;flex:1;overflow:hidden;border-radius:14px 14px 0 0;padding-bottom:0}
+.svc-wrap h5{margin:0 0 10px;font-size:13.5px}
+.item{border:1.5px solid var(--app-line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.item .r1{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
+.info{width:16px;height:16px;border-radius:50%;border:1.6px solid #F2A915;color:#F2A915;font-size:10px;font-weight:700;display:grid;place-items:center;font-style:normal}
+.item .r2{display:flex;justify-content:space-between;align-items:center;margin-top:10px;height:28px}
+.item .price{font-weight:600;font-size:14.5px}
+.add{height:28px;padding:0 16px;border-radius:99px;border:0;background:var(--grad);color:#fff;font-size:12px;font-weight:600;transition:transform .15s}
+.stepper{display:none;align-items:center;gap:12px;font-weight:600;font-size:15px}
+.stepper b{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2EC8A0,#1FB6EE);color:#fff;display:grid;place-items:center;font-size:18px;font-weight:500;line-height:1}
+.item.on .add{display:none}.item.on .stepper{display:flex;animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+.item.on{border-color:#BFE9D7}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.total{background:#fff;padding:12px 14px 16px;flex:none;box-shadow:0 -6px 16px rgba(20,30,40,.05);position:relative;z-index:2}
+.total .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;font-size:13px}
+.total .sum{font-weight:700;font-size:16px;display:inline-block}
+.sum.bump{animation:bump .4s}
+@keyframes bump{40%{transform:scale(1.15);color:#1FAE7A}}
+
+/* s4 — search */
+.map{position:absolute;inset:0 0 auto 0;height:62%}
+.map svg{width:100%;height:100%;display:block}
+.pulse{transform-origin:150px 150px;animation:pulse 2.4s ease-out infinite}
+.pulse.p2{animation-delay:.8s}.pulse.p3{animation-delay:1.6s}
+@keyframes pulse{0%{transform:scale(.25);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+.pin{animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.xbtn{position:absolute;top:44px;right:14px;width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:3}
+#s3 .sb{position:relative;z-index:3}
+.bsheet{position:absolute;left:0;right:0;bottom:0;height:47%;background:#fff;border-radius:22px 22px 0 0;padding:8px 16px 14px;display:flex;flex-direction:column;box-shadow:0 -8px 24px rgba(0,0,0,.08)}
+.handle{width:34px;height:4px;border-radius:4px;background:var(--grad);margin:0 auto 12px}
+.st-row{display:flex;justify-content:space-between;align-items:baseline}
+.st-t{font-weight:700;font-size:15px}
+.st-time{font-size:15px;font-variant-numeric:tabular-nums}
+.st-s{font-size:12px;margin-top:4px;color:#3A4148;min-height:16px}
+.prog{position:relative;display:flex;justify-content:space-between;margin:16px 4px 0}
+.prog::before,.prog i{content:"";position:absolute;left:18px;right:18px;top:50%;height:3px;margin-top:-1.5px;background:#EDF0F3}
+.prog i{right:auto;width:0;background:var(--grad);transition:width 1s ease;z-index:0}
+.prog span{position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:#EEF1F4;display:grid;place-items:center;transition:background .4s}
+.prog span svg{width:17px;height:17px;stroke:#2B3137;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.prog span.on{background:var(--grad)}
+.prog span.on svg{stroke:#fff}
+.illu{flex:1;display:grid;place-items:center}
+.illu svg{height:62px}
+.mag{animation:scan 2.4s ease-in-out infinite}
+@keyframes scan{0%,100%{transform:translate(0,0)}33%{transform:translate(-18px,-16px)}66%{transform:translate(4px,-26px)}}
+.acts{display:flex;justify-content:space-around;font-size:12px;font-weight:600;text-align:center}
+.acts div span{width:36px;height:36px;border-radius:50%;background:#EEF1F4;display:grid;place-items:center;margin:0 auto 5px}
+
+/* ---------- controls & cta ---------- */
+.ctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px}
+.ctrl button{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);cursor:pointer;display:grid;place-items:center}
+.ctrl button:hover{border-color:var(--ink)}
+.ctrl svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ctrl .count{font-weight:700;font-size:14px;min-width:48px;text-align:center;color:var(--muted)}
+.cta{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:56px}
+.cta a{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:700;padding:16px 28px;border-radius:99px;transition:transform .2s}
+.cta a:hover{transform:translateY(-2px)}
+.cta span{color:var(--muted)}
+.mdesc{display:none}
+
+@media (max-width:900px){
+  .how{padding:48px 16px 56px}
+  .stage{grid-template-columns:1fr;gap:20px}
+  .device-wrap{order:1}
+  .steps{order:2;flex-direction:row;gap:6px}
+  .step{padding:12px 6px;text-align:center;border-radius:18px}
+  .step .num{position:static;margin:0 auto;width:36px;height:36px;font-size:14px}
+  .step h3{font-size:12.5px;margin-top:8px;line-height:1.2}
+  .step .desc,.step .stores{display:none}
+  .step .bar{margin:10px 6px 0;height:3px}
+  .mdesc{display:block;order:3;text-align:center;color:var(--muted);line-height:1.55;min-height:50px;margin:0 auto;max-width:40ch}
+  .phone{transform:scale(.9);margin:-32px 0}
+}
+@media (max-width:360px){.phone{transform:scale(.82);margin:-58px 0}}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .step .bar{display:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#55DB6B"/><stop offset="1" stop-color="#1FB6EE"/></linearGradient>
+    <symbol id="logo" viewBox="0 0 100 100">
+      <path d="M50 16C31 16 20 31 20 47c0 19 19 32 30 45 11-13 30-26 30-45 0-16-11-31-30-31z" fill="url(#lg)"/>
+      <ellipse cx="50" cy="52" rx="18" ry="19" fill="#fff"/>
+      <path d="M32 46c4-9 10-12 18-12s14 3 18 12c-6-4-12-5-18-5s-12 1-18 5z" fill="url(#lg)"/>
+      <path d="M40 54q3-3 6 0M54 54q3-3 6 0" stroke="#1FAE9A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M45 61q5 4 10 0" stroke="#1FAE9A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M33 14q17-7 34 0v9q-17-5-34 0z" fill="#fff" stroke="url(#lg)" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M50 13v6M47 16h6" stroke="url(#lg)" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="back" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="tick" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<section class="how" id="how" aria-labelledby="how-title">
+  <div class="head">
+    <span class="pill">Yo‘riqnoma</span>
+    <h2 id="how-title">Uyda tibbiy yordamni qanday olish mumkin?</h2>
+    <p class="sub">Atigi 4 qadam – va hamshira uyingizda bo‘ladi!</p>
+  </div>
+
+  <div class="stage">
+    <ol class="steps" role="tablist" aria-label="Qadamlar">
+      <li><button class="step active" data-i="0" style="--dur:6s" role="tab" aria-selected="true" aria-controls="s0">
+        <span class="num"><span>1</span><svg class="done" width="18" height="18"><use href="#tick"/></svg></span>
+        <h3>Ilovani yuklab oling</h3>
+        <span class="desc"><div><p>“Onlayn Hamshira” ilovasini App Store yoki Google Play’dan bepul o‘rnating.</p></div></span>
+        <span class="bar"><i></i></span>
+      </button></li>
+      <li><button class="step" data-i="1" style="--dur:8s" role="tab" aria-selected="false" aria-controls="s1">
+        <span class="num"><span>2</span><svg class="done" width="18" height="18"><use href="#tick"/></svg></span>
+        <h3>Ro‘yxatdan o‘ting</h3>
+        <span class="desc"><div><p>Telefon raqamingizni kiriting va SMS yoki Telegram orqali kelgan kodni tasdiqlang.</p></div></span>
+        <span class="bar"><i></i></span>
+      </button></li>
+      <li><button class="step" data-i="2" style="--dur:7s" role="tab" aria-selected="false" aria-controls="s2">
+        <span class="num"><span>3</span><svg class="done" width="18" height="18"><use href="#tick"/></svg></span>
+        <h3>Xizmatni tanlang</h3>
+        <span class="desc"><div><p>Kerakli muolajalarni qo‘shing – umumiy narx shu zahoti hisoblanib turadi.</p></div></span>
+        <span class="bar"><i></i></span>
+      </button></li>
+      <li><button class="step" data-i="3" style="--dur:7.5s" role="tab" aria-selected="false" aria-controls="s3">
+        <span class="num"><span>4</span><svg class="done" width="18" height="18"><use href="#tick"/></svg></span>
+        <h3>Buyurtma bering</h3>
+        <span class="desc"><div><p>“Tayyor”ni bosing – ilova sizga eng yaqin mutaxassisni topadi va holatini ko‘rsatib boradi.</p></div></span>
+        <span class="bar"><i></i></span>
+      </button></li>
+    </ol>
+
+    <div class="device-wrap">
+      <div class="blob" id="blob"></div>
+      <div>
+        <div class="phone" id="phone">
+          <div class="box" id="box">
+            <span class="tapdot" id="tapdot"></span>
+
+            <!-- 1: Play Store -->
+            <div class="screen active" id="s0" data-st="idle" role="tabpanel" aria-label="Ilovani yuklab olish">
+              <div class="sb"><span>02:33</span><span class="ic"><span class="bat"></span></span></div>
+              <div class="ps-top"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M20 12H4m6-6-6 6 6 6"/></svg><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M12 5h.01M12 12h.01M12 19h.01"/></svg></div>
+              <div class="ps-app">
+                <div class="ps-icon">
+                  <svg class="ring" viewBox="0 0 74 74"><circle cx="37" cy="37" r="35" id="ring"/></svg>
+                  <div class="ic"><svg class="logo"><use href="#logo"/></svg></div>
+                </div>
+                <div>
+                  <div class="ps-name">Onlayn Hamshira</div>
+                  <div class="ps-dev">ONLAYN HAMSHIRA LLC</div>
+                  <div class="ps-pct" id="pct">0% of 24 MB</div>
+                </div>
+              </div>
+              <div class="ps-stats">
+                <div><b>4.3 ★</b>62 reviews</div>
+                <div><b>3+</b>Rated for 3+</div>
+                <div><b>10K+</b>Downloads</div>
+              </div>
+              <div class="ps-btns">
+                <button class="b-install fill" id="bInstall" tabindex="-1">Install</button>
+                <button class="b-cancel" tabindex="-1">Cancel</button>
+                <button class="b-open-dis dis" tabindex="-1">Open</button>
+                <button class="b-un" tabindex="-1">Uninstall</button>
+                <button class="b-open fill" id="bOpen" tabindex="-1">Open</button>
+              </div>
+              <div class="ps-rate"><h4>Rate this app</h4><p>Tell others what you think</p><div class="ps-stars"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></div></div>
+              <div class="ps-about">Tibbiy yordam uyingizda – tez, qulay, xavfsiz!</div>
+            </div>
+
+            <!-- 2: Register -->
+            <div class="screen" id="s1" role="tabpanel" aria-label="Ro‘yxatdan o‘tish" style="background:#000">
+              <div class="sb" style="color:#fff"><span>02:34</span><span class="ic"><span class="bat"></span></span></div>
+              <div class="sheet-top"></div>
+              <div class="sheet">
+                <div class="hdr"><svg><use href="#back"/></svg><span>Kirish / Ro‘yxatdan o‘tish</span></div>
+                <div class="subs">
+                  <div class="subp a">
+                    <div class="card">
+                      <div class="otp-t">Telefon raqamni kiriting</div>
+                      <div class="lbl">Telefon raqami</div>
+                      <div class="inp" id="inp"><span class="cc">+998</span><span id="typed"></span><span class="caret"></span></div>
+                      <div class="agree"><span class="chkb"><svg width="11" height="11" style="color:#fff"><use href="#tick"/></svg></span><span>Tugmani bosish orqali siz <span class="gtext">Ommaviy oferta va maxfiylik siyosatiga rozilik bildirasiz.</span></span></div>
+                    </div>
+                    <div class="btns">
+                      <div class="gbtn" id="bCode">Kodni olish</div>
+                      <div class="obtn"><span class="tg"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z" fill="#fff"/></svg></span>Kodni Telegram orqali olish</div>
+                    </div>
+                  </div>
+                  <div class="subp b">
+                    <div class="card">
+                      <div class="otp-t">Quyidagi raqamga yuborilgan SMS kodni kiriting:</div>
+                      <div class="otp-n"><span class="gtext">+998 93 755 04 12</span></div>
+                      <div class="otp" id="otp"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                      <div class="resend">Kodni qayta yuborish <span id="cd">59</span> sekund</div>
+                    </div>
+                    <div class="btns"><div class="gbtn" id="bVerify"><span class="t">Tasdiqlash</span><span class="spin"></span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3: Services -->
+            <div class="screen" id="s2" role="tabpanel" aria-label="Xizmatni tanlash">
+              <div class="sb"><span>02:35</span><span class="ic"><span class="bat"></span></span></div>
+              <div class="hdr"><svg><use href="#back"/></svg><span>Mutaxassis profili</span></div>
+              <div class="sec-t">Xizmatlar ro‘yxati</div>
+              <div class="card call">Mutaxassis chaqiruv narxi<br><span class="gtext">50 000 so‘m</span></div>
+              <div class="card svc-wrap">
+                <h5>Xizmatni tanlang</h5>
+                <div class="item" id="it1"><div class="r1">Tomir ichiga ukol (V/V)<i class="info">i</i></div><div class="r2"><span class="price gtext">50 000 so‘m</span><button class="add" tabindex="-1">Qo‘shish</button><span class="stepper"><b>−</b>1<b>+</b></span></div></div>
+                <div class="item" id="it2"><div class="r1">Yonboshga ukol (V/M)<i class="info">i</i></div><div class="r2"><span class="price gtext">50 000 so‘m</span><button class="add" tabindex="-1">Qo‘shish</button><span class="stepper"><b>−</b>1<b>+</b></span></div></div>
+                <div class="item"><div class="r1">Kindik sohasiga inyeksiya<i class="info">i</i></div><div class="r2"><span class="price gtext">50 000 so‘m</span><button class="add" tabindex="-1">Qo‘shish</button></div></div>
+                <div class="item"><div class="r1">Sistema (kapelnitsa)<i class="info">i</i></div><div class="r2"><span class="price gtext">120 000 so‘m</span><button class="add" tabindex="-1">Qo‘shish</button></div></div>
+              </div>
+              <div class="total">
+                <div class="row"><span>Jami:</span><span class="sum" id="sum">50 000 so‘m</span></div>
+                <div class="gbtn" id="bReady">Tayyor</div>
+              </div>
+            </div>
+
+            <!-- 4: Searching -->
+            <div class="screen" id="s3" role="tabpanel" aria-label="Buyurtma berish">
+              <div class="map">
+                <svg viewBox="0 0 290 390" preserveAspectRatio="xMidYMid slice">
+                  <rect width="290" height="390" fill="#F1F0EC"/>
+                  <path d="M190 330 L260 250 L290 262 L290 390 L170 390Z" fill="#DDEFC9"/>
+                  <path d="M30 290 L110 300 L130 390 L40 390Z" fill="#DDEFC9"/>
+                  <g stroke="#fff" stroke-width="5" fill="none" transform="rotate(-38 145 190)">
+                    <path d="M-80 60H380M-80 110H380M-80 160H380M-80 210H380M-80 260H380M-80 310H380"/>
+                    <path d="M20 -40V440M75 -40V440M130 -40V440M185 -40V440M240 -40V440M295 -40V440"/>
+                  </g>
+                  <g stroke="#D5D8DC" stroke-width="1" fill="none" transform="rotate(-38 145 190)">
+                    <path d="M-80 85H380M-80 135H380M-80 185H380M-80 235H380M-80 285H380M48 -40V440M158 -40V440M268 -40V440"/>
+                  </g>
+                  <path d="M-10 120 L120 30 L200 -10" stroke="#F5DE8A" stroke-width="7" fill="none"/>
+                  <path d="M40 150 L80 250 L290 90" stroke="#F5DE8A" stroke-width="6" fill="none" opacity=".8"/>
+                  <path d="M290 130 L200 390" stroke="#9CCBEF" stroke-width="2" fill="none"/>
+                  <g font-family="Onest,sans-serif" font-size="9" font-weight="700" fill="#A3A8B8" letter-spacing=".5">
+                    <text x="160" y="60">IQBOL MAHALLA</text><text x="190" y="235">ZIYOLILAR</text><text x="150" y="300">IYKOTA MAHALLA</text>
+                  </g>
+                  <circle class="pulse" cx="150" cy="150" r="90" fill="#43C98A" opacity=".35"/>
+                  <circle class="pulse p2" cx="150" cy="150" r="90" fill="#43C98A" opacity=".35"/>
+                  <circle class="pulse p3" cx="150" cy="150" r="90" fill="#43C98A" opacity=".35"/>
+                  <g class="pin"><path d="M150 148V168" stroke="#2BB59A" stroke-width="3" stroke-linecap="round"/><circle cx="150" cy="138" r="13" fill="url(#lg)"/><circle cx="150" cy="138" r="5" fill="#fff"/></g>
+                </svg>
+              </div>
+              <div class="sb"><span>02:36</span><span class="ic"><span class="bat"></span></span></div>
+              <div class="xbtn"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" stroke="#1E2328" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+              <div class="bsheet">
+                <div class="handle"></div>
+                <div class="st-row"><span class="st-t" id="stT">Mutaxassis qidirilmoqda</span><span class="st-time" id="stTime">00:00</span></div>
+                <div class="st-s" id="stS">Qidiruv boshlanmoqda...</div>
+                <div class="prog"><i id="progLine"></i>
+                  <span class="on"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></span>
+                  <span id="pg2"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="11" height="18" rx="2"/><path d="M10 18h3M14 7l1.5 1.5L19 5"/></svg></span>
+                  <span><svg viewBox="0 0 24 24"><path d="M4 7l5 5-5 5M12 7h8M13 12h2m3 0h2M12 17h8"/></svg></span>
+                  <span><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                  <span><svg viewBox="0 0 24 24"><path d="M2 13l4 4L16 7M11 16l1 1L22 7"/></svg></span>
+                </div>
+                <div class="illu"><svg viewBox="0 0 120 70">
+                  <rect x="30" y="4" width="60" height="62" rx="4" fill="#E3F6EF"/>
+                  <path d="M38 16h26M38 22h18M38 38h22M38 52h26" stroke="#9FDCC6" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="76" cy="18" r="8" fill="#fff" stroke="#1FB6EE" stroke-width="1.5"/><circle cx="76" cy="16" r="3" fill="#1E2328"/><path d="M71 23q5-5 10 0" fill="#1E2328"/>
+                  <circle cx="46" cy="36" r="8" fill="#fff" stroke="#1FB6EE" stroke-width="1.5"/><circle cx="46" cy="34" r="3" fill="#B0523A"/><path d="M41 41q5-5 10 0" fill="#2BB59A"/>
+                  <circle cx="72" cy="50" r="8" fill="#fff" stroke="#1FB6EE" stroke-width="1.5"/><circle cx="72" cy="48" r="3" fill="#1E2328"/><path d="M67 55q5-5 10 0" fill="#2BB59A"/>
+                  <g class="mag"><circle cx="70" cy="48" r="11" fill="rgba(31,182,238,.12)" stroke="#2BB59A" stroke-width="2.5"/><path d="M62 56 50 64" stroke="#2BB59A" stroke-width="3" stroke-linecap="round"/></g>
+                </svg></div>
+                <div class="acts">
+                  <div><span><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" stroke="#E53935" stroke-width="2.6" stroke-linecap="round"/></svg></span>Bekor qilish</div>
+                  <div><span><svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1E2328" stroke-width="2.4" stroke-linecap="round"/></svg></span>Batafsil</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ctrl">
+          <button id="prev" aria-label="Oldingi qadam"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="count" id="count">1 / 4</span>
+          <button id="play" aria-label="Pauza"><svg viewBox="0 0 24 24" id="playIcon"><path d="M9 6v12M15 6v12"/></svg></button>
+          <button id="next" aria-label="Keyingi qadam"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <p class="mdesc" id="mdesc" aria-live="polite"></p>
+  </div>
+
+  <div class="cta">
+    <a href="#">Hozir buyurtma berish</a>
+    <span>Ilovasiz ham ishlaydi, brauzerda.</span>
+  </div>
+</section>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const root=$('how'), box=$('box'), dot=$('tapdot');
+  const steps=[...root.querySelectorAll('.step')];
+  const screens=[...box.querySelectorAll('.screen')];
+  const tints=['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur=0, userPaused=reduce, hover=false, T=[], I=[];
+
+  const at=(ms,fn)=>T.push(setTimeout(fn,reduce?0:ms));
+  const every=(ms,fn)=>{const id=setInterval(fn,ms);I.push(id);return id};
+  function clearAll(){T.forEach(clearTimeout);I.forEach(clearInterval);T=[];I=[]}
+  function tap(el){
+    if(reduce)return;
+    const b=box.getBoundingClientRect(), r=el.getBoundingClientRect();
+    const s=b.width/box.offsetWidth; // phone may be scaled on mobile
+    dot.style.left=((r.left-b.left)+r.width/2)/s+'px';
+    dot.style.top=((r.top-b.top)+r.height/2)/s+'px';
+    dot.classList.remove('go');void dot.offsetWidth;dot.classList.add('go');
+    el.classList.add('pressed');setTimeout(()=>el.classList.remove('pressed'),220);
+  }
+  const fmt=n=>n.toLocaleString('ru-RU').replace(/ /g,' ')+' so‘m';
+
+  const scenes=[
+    function(){ // Play Store
+      const s=$('s0'), ring=$('ring'), pct=$('pct');
+      s.dataset.st='idle'; ring.style.transition='none'; ring.style.strokeDashoffset=220; pct.textContent='0% of 24 MB';
+      at(900,()=>tap($('bInstall')));
+      at(1150,()=>{
+        s.dataset.st='loading'; void ring.offsetWidth;
+        ring.style.transition='stroke-dashoffset 2.4s cubic-bezier(.4,0,.2,1)'; ring.style.strokeDashoffset=0;
+        let p=0; const id=every(100,()=>{p=Math.min(100,p+Math.ceil(Math.random()*6+2));pct.textContent=p+'% of 24 MB';if(p>=100)clearInterval(id)});
+      });
+      at(3700,()=>{s.dataset.st='done'});
+      at(4700,()=>tap($('bOpen')));
+    },
+    function(){ // Register
+      const s=$('s1'), typed=$('typed'), inp=$('inp'), boxes=[...$('otp').children], cd=$('cd'), v=$('bVerify');
+      s.classList.remove("code-view"); typed.textContent=''; inp.classList.remove('focus'); v.classList.remove('loading');
+      boxes.forEach(b=>{b.textContent='';b.classList.remove('on')}); cd.textContent='59';
+      const num='93 755 04 12'; let k=0;
+      at(400,()=>{inp.classList.add('focus');const id=every(95,()=>{typed.textContent=num.slice(0,++k);if(k>=num.length)clearInterval(id)})});
+      at(2100,()=>tap($('bCode')));
+      at(2400,()=>{s.classList.add("code-view");let c=59;every(1000,()=>{cd.textContent=--c})});
+      '881536'.split('').forEach((d,i)=>at(3100+i*220,()=>{boxes[i].textContent=d;boxes[i].classList.add('on')}));
+      at(4700,()=>{tap(v);v.classList.add('loading')});
+    },
+    function(){ // Services
+      const it1=$('it1'), it2=$('it2'), sum=$('sum');
+      [it1,it2].forEach(i=>i.classList.remove('on')); sum.textContent=fmt(50000);
+      const bump=v=>{sum.textContent=fmt(v);sum.classList.remove('bump');void sum.offsetWidth;sum.classList.add('bump')};
+      at(1100,()=>tap(it1.querySelector('.add')));
+      at(1300,()=>{it1.classList.add('on');bump(100000)});
+      at(2500,()=>tap(it2.querySelector('.add')));
+      at(2700,()=>{it2.classList.add('on');bump(150000)});
+      at(4200,()=>tap($('bReady')));
+    },
+    function(){ // Search
+      const t=$('stT'), s=$('stS'), time=$('stTime'), line=$('progLine'), pg2=$('pg2');
+      t.textContent='Mutaxassis qidirilmoqda'; s.textContent='Qidiruv boshlanmoqda...'; time.textContent='00:00';
+      line.style.width='0'; pg2.classList.remove('on');
+      let sec=0; const id=every(1000,()=>{sec++;time.textContent='00:'+String(sec).padStart(2,'0')});
+      at(1800,()=>{s.textContent='Yaqin atrofdagi mutaxassislar qidirilmoqda...'});
+      at(4300,()=>{clearInterval(id);line.style.width='calc(25% - 9px)'});
+      at(5200,()=>{pg2.classList.add('on');t.textContent='Mutaxassis topildi';s.textContent='Buyurtmangiz qabul qilindi'});
+    }
+  ];
+
+  function go(n){
+    n=(n+4)%4; clearAll();
+    steps.forEach((s,i)=>{
+      s.classList.toggle('active',i===n); s.classList.toggle('past',i<n);
+      s.setAttribute('aria-selected',i===n); s.tabIndex=i===n?0:-1;
+      const bar=s.querySelector('.bar i'); bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='';
+    });
+    screens.forEach((sc,i)=>{sc.classList.remove('active','leave'); if(i===cur&&i!==n)sc.classList.add('leave')});
+    void screens[n].offsetWidth; screens[n].classList.add('active');
+    $('blob').style.setProperty('--blob',tints[n]);
+    $('count').textContent=(n+1)+' / 4';
+    $('mdesc').textContent=steps[n].querySelector('.desc p').textContent;
+    cur=n; scenes[n]();
+  }
+
+  steps.forEach((s,i)=>{
+    s.addEventListener('click',()=>go(i));
+    s.querySelector('.bar i').addEventListener('animationend',()=>{if(!userPaused&&!hover)go(cur+1)});
+    s.addEventListener('keydown',e=>{
+      if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();go(cur+1);steps[cur].focus()}
+      if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();go(cur-1);steps[cur].focus()}
+    });
+  });
+  $('next').onclick=()=>go(cur+1);
+  $('prev').onclick=()=>go(cur-1);
+
+  const stage=root.querySelector('.stage');
+  const setPaused=()=>root.classList.toggle('paused',userPaused||hover);
+  stage.addEventListener('mouseenter',()=>{hover=true;setPaused()});
+  stage.addEventListener('mouseleave',()=>{hover=false;setPaused()});
+  const playIcon=$('playIcon'), playBtn=$('play');
+  const drawPlay=()=>{playIcon.innerHTML=userPaused?'<path d="M8 5l11 7-11 7z"/>':'<path d="M9 6v12M15 6v12"/>';playBtn.setAttribute('aria-label',userPaused?'Davom ettirish':'Pauza')};
+  playBtn.onclick=()=>{userPaused=!userPaused;setPaused();drawPlay()};
+  drawPlay();
+
+  let sx=null; const ph=$('phone');
+  ph.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+  ph.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null});
+
+  let seen=false;
+  root.classList.add('paused');
+  new IntersectionObserver(([en])=>{
+    if(en.isIntersecting){ if(!seen){seen=true;go(0)} setPaused(); }
+    else root.classList.add('paused');
+  },{threshold:.35}).observe(root);
+})();
+</script>
+</body>
+</html>

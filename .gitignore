@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+.env*.local
+next-env.d.ts
+*.tsbuildinfo
+
+# Xom manba animatsiya (24.8MB) — saytga siqilgan versiyasi (public/img/app) qo'yiladi
+public/gemini_generated_video_*.gif
