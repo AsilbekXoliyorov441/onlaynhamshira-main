@@ -38,13 +38,13 @@ export function YoutubeIcon({ className = "size-5" }: { className?: string }) {
   );
 }
 
-// Rasmiy logotip (onlaynhamshira.uz dan). Istasangiz /public/logo.svg ga ko'chiring.
+// Rasmiy logotip; belgi brend gradientida (public/logo-v2.svg)
 export function Logo({ className = "h-10" }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     // SVG — next/image optimallashtirmaydi; o'z serverimizdan (tashqi CDN ulanishisiz)
     <img
-      src="/logo.svg"
+      src="/logo-v2.svg"
       alt="Onlayn Hamshira"
       className={`w-auto ${className}`}
       width={139}

@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       { source: "/img/:path*", headers: cache },
       { source: "/services/:path*", headers: cache },
       { source: "/badges/:path*", headers: cache },
-      { source: "/logo.svg", headers: cache },
+      { source: "/logo-v2.svg", headers: cache },
     ];
   },
 };
