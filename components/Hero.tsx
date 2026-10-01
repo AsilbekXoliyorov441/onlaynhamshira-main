@@ -15,7 +15,7 @@ export default function Hero() {
     <section id="top" className="relative px-3 pt-[88px] sm:px-4">
       <div className="relative mx-auto grid max-w-[1400px] gap-3 lg:grid-cols-[1.05fr_1fr]">
         {/* Chap: sarlavha */}
-        <div data-reveal="scale" className="relative flex flex-col overflow-hidden rounded-[32px] bg-[linear-gradient(150deg,#ecfbef_0%,#e4f6f4_45%,#dcf1fb_100%)] px-6 pt-10 pb-8 sm:px-12 sm:pt-14 sm:pb-10">
+        <div className="hero-in relative flex flex-col overflow-hidden rounded-[32px] bg-[linear-gradient(150deg,#ecfbef_0%,#e4f6f4_45%,#dcf1fb_100%)] px-6 pt-10 pb-8 sm:px-12 sm:pt-14 sm:pb-10">
           {/* Logo ranglaridagi yumshoq nur dog'lari */}
           <div aria-hidden className="pointer-events-none absolute -top-32 -left-24 size-[420px] rounded-full bg-brand/25 blur-[100px]" />
           <div aria-hidden className="pointer-events-none absolute -right-24 -bottom-32 size-[440px] rounded-full bg-brand-blue/25 blur-[110px]" />
@@ -31,7 +31,7 @@ export default function Hero() {
                 <span className="size-2.5 rounded-full bg-brand-deep" />
               </span>
               Hamshirani onlayn chaqirish
-              <span className="grid size-6 place-items-center rounded-full bg-ink text-white transition group-hover:translate-x-0.5">
+              <span className="grid size-6 place-items-center rounded-full bg-brand-grad text-white transition group-hover:translate-x-0.5">
                 <ArrowRight className="size-3.5" />
               </span>
             </a>
@@ -83,11 +83,13 @@ export default function Hero() {
         </div>
 
         {/* O'ng: foto + buyurtma kartasi */}
-        <div data-reveal="scale" style={{ "--d": 1 } as React.CSSProperties} className="relative flex flex-col gap-3 overflow-hidden rounded-[32px] bg-mist p-3">
+        <div style={{ "--d": 1 } as React.CSSProperties} className="hero-in relative flex flex-col gap-3 overflow-hidden rounded-[32px] bg-mist p-3">
           <Image
             src={IMAGES.hero}
             alt="Onlayn Hamshira hamshirasi bemor uyiga ketmoqda"
             fill
+            loading="eager"
+            fetchPriority="high"
             quality={60}
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[60%_center]"

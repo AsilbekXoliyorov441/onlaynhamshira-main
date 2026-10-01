@@ -1,0 +1,456 @@
+/*
+ * Yangiliklar bo'limi — saytning umumiy palitrasida (app/globals.css @theme):
+ * ink, ink-soft, mist, line, pastel kartalar (peach/sky/lilac/mint), brend gradienti.
+ */
+
+.section {
+  padding: 96px 0;
+  overflow: hidden;
+  color: var(--color-ink);
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+.carousel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ---------- Brend gradientli tugmalar ---------- */
+.allLink,
+.arrow.arrowNext {
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-teal) 55%, var(--color-brand-blue) 100%);
+  color: #fff;
+  box-shadow: 0 12px 28px -12px rgb(56 197 177 / 0.9);
+}
+.allLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 8px 0 24px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: filter 0.3s, transform 0.3s;
+}
+.allLink:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+}
+.allLinkIcon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-brand-deep);
+}
+.allLinkIcon svg {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.allLink:hover .allLinkIcon svg {
+  transform: translateX(4px);
+}
+
+/* ---------- Strelkalar (faqat karusel) ---------- */
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color 0.3s, opacity 0.3s, filter 0.3s, transform 0.2s;
+}
+.arrow:not(:disabled):hover {
+  border-color: var(--color-ink);
+}
+.arrowNext {
+  border-color: transparent;
+}
+.arrowNext:not(:disabled):hover {
+  border-color: transparent;
+  filter: brightness(1.05);
+}
+.arrow:not(:disabled):active {
+  transform: scale(0.95);
+}
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ---------- Kartalar konteyneri ---------- */
+/* ≤3 ta: oddiy to'r (karusel yo'q) */
+.grid {
+  width: 100%;
+  display: grid;
+  /* --n = yangiliklar soni (1–3): hammasi bitta qatorda, har biri ko'pi bilan 384px */
+  grid-template-columns: repeat(var(--n, 3), minmax(0, 384px));
+  justify-content: center;
+  gap: 24px;
+}
+/* ≥4 ta: karusel */
+.track {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scroll-padding: 0 24px;
+  padding: 14px 24px 40px;
+  margin: -14px -24px -40px;
+  scrollbar-width: none;
+  cursor: grab;
+  outline: none;
+}
+.track::-webkit-scrollbar {
+  display: none;
+}
+.track:focus-visible {
+  outline: 3px solid var(--color-brand-teal);
+  outline-offset: 6px;
+  border-radius: 32px;
+}
+.track[data-edge="start"] { mask-image: linear-gradient(90deg, #000 90%, transparent); }
+.track[data-edge="end"] { mask-image: linear-gradient(90deg, transparent, #000 10%); }
+.track[data-edge="middle"] { mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.track.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+.track.dragging .card {
+  pointer-events: none;
+}
+.track .card {
+  flex: 0 0 384px;
+  scroll-snap-align: start;
+}
+
+/* ---------- Karta ---------- */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 30px;
+  overflow: hidden;
+  color: var(--color-ink);
+  text-decoration: none;
+  box-shadow: 0 20px 40px -30px rgb(16 41 58 / 0.45);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  -webkit-user-drag: none;
+}
+/* Saytdagi boshqa kartalar kabi pastel ranglar navbatma-navbat */
+.card:nth-child(4n + 1) { background: var(--color-sky); }
+.card:nth-child(4n + 2) { background: var(--color-peach); }
+.card:nth-child(4n + 3) { background: var(--color-lilac); }
+.card:nth-child(4n + 4) { background: var(--color-mint); }
+
+.media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 23px;
+  overflow: hidden;
+  background: #fff;
+  flex: none;
+}
+.media img {
+  object-fit: contain;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 12px 14px;
+  flex-grow: 1;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.category {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-brand-deep);
+}
+.badgeArrow {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-brand-deep);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.cardTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.excerpt,
+.more {
+  display: none;
+}
+
+/* Desktop hover qatlami — ilova banneridagi to'q brend gradienti */
+.overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 14px;
+  color: #fff;
+  background: linear-gradient(180deg, rgb(18 128 62 / 0.25) 0%, rgb(11 117 113 / 0.95) 48%, rgb(13 97 155 / 0.98) 100%);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+.overlay > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.45s, transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.overlay > :nth-child(1) { transition-delay: 0.05s; }
+.overlay > :nth-child(2) { transition-delay: 0.12s; }
+.overlay > :nth-child(3) { transition-delay: 0.19s; }
+.overlay > :nth-child(4) { transition-delay: 0.26s; }
+.ovCategory {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.2);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.ovTitle {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.ovExcerpt {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.9);
+}
+.ovMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-brand-deep);
+  font-size: 15px;
+  font-weight: 700;
+}
+.ovMore svg {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (min-width: 761px) {
+  .card:focus-visible {
+    outline: 3px solid var(--color-brand-teal);
+    outline-offset: 4px;
+  }
+  .card:focus-visible,
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 34px 60px -28px rgb(16 41 58 / 0.5);
+  }
+  .card:focus-visible .badgeArrow,
+  .card:hover .badgeArrow {
+    transform: rotate(45deg);
+  }
+  .card:focus-visible .overlay,
+  .card:hover .overlay {
+    opacity: 1;
+  }
+  .card:focus-visible .overlay > *,
+  .card:hover .overlay > * {
+    opacity: 1;
+    transform: none;
+  }
+  .card:hover .ovMore svg {
+    transform: translateX(4px);
+  }
+}
+
+/* ---------- Kartalar ostida: strelka · nuqtalar · strelka ---------- */
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.dots {
+  display: flex;
+  align-items: center;
+}
+.dot {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.dot span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-line);
+  transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s;
+}
+.dot:hover span {
+  background: rgb(16 41 58 / 0.3);
+}
+.dot[aria-current="true"] span {
+  width: 34px;
+  background: linear-gradient(90deg, var(--color-brand), var(--color-brand-blue));
+}
+
+/* ---------- Mobil ---------- */
+@media (max-width: 760px) {
+  .section {
+    padding: 64px 0;
+  }
+  .container {
+    gap: 32px;
+  }
+  /* To'r (≤3): bitta ustun, gorizontal ixcham karta */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .grid .card {
+    flex-direction: row;
+    gap: 4px;
+    border-radius: 22px;
+    padding: 6px;
+  }
+  .grid .media {
+    width: 112px;
+    border-radius: 17px;
+  }
+  .grid .body {
+    padding: 8px 8px 6px;
+  }
+
+  /* Karusel (≥4): ekranda aniq 2 ta karta */
+  .track {
+    gap: 12px;
+  }
+  .track .card {
+    flex: 0 0 calc((100vw - 60px) / 2);
+    border-radius: 22px;
+    padding: 5px;
+  }
+  .track .media {
+    border-radius: 18px;
+  }
+  .track .body {
+    padding: 10px 6px 8px;
+  }
+
+  .body {
+    gap: 6px;
+  }
+  .row:empty,
+  .badgeArrow,
+  .overlay {
+    display: none;
+  }
+  .category {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .cardTitle {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+  .excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+  }
+  .more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: auto;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-brand-deep);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .grid .more {
+    align-self: flex-start;
+  }
+  .bottom {
+    gap: 8px;
+  }
+  .arrow {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section *,
+  .section *::before,
+  .section *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .track {
+    scroll-behavior: auto;
+  }
+}

@@ -1,4 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
+import ns from "./news/News.module.css";
+import { NewsCarousel } from "./news/NewsCarousel";
+import { NewsCard, type NewsPost } from "./news/NewsCard";
+import { ArrowRight as NewsArrowRight } from "./news/icons";
 import { ArrowRight, Globe, Mail } from "lucide-react";
 import { BENEFITS, IMAGES, LINKS, NEWS, SAFETY } from "@/lib/data";
 import { StoreButtons } from "./DownloadModal";
@@ -9,11 +14,12 @@ import { Icon, IconTile, type IconName } from "./Icon";
 const d = (i: number) => ({ "--d": i }) as React.CSSProperties;
 
 export function SectionHead({
-  label, title, text, align = "center", id,
-}: { label: string; title: string; text?: string; align?: "center" | "left"; id?: string }) {
+  label, title, text, align = "center", id, wide,
+}: { label: string; title: string; text?: string; align?: "center" | "left"; id?: string; wide?: boolean }) {
   const c = align === "center" ? "mx-auto text-center items-center" : "items-start";
   return (
-    <div data-reveal className={`flex max-w-[760px] flex-col ${c}`}>
+    // wide: uzun sarlavha desktopda 2 qatorga sig'ishi uchun
+    <div data-reveal className={`flex flex-col ${wide ? "max-w-[1000px]" : "max-w-[760px]"} ${c}`}>
       <p className="inline-flex items-center gap-2 rounded-full bg-mint px-3.5 py-1.5 text-sm font-semibold text-brand-deep">
         <span className="size-1.5 rounded-full bg-brand-deep" />
         {label}
@@ -152,7 +158,7 @@ export function Safety() {
           ))}
         </ul>
         <p className="mt-6 text-center">
-          <a href={LINKS.certificates} className="group inline-flex items-center gap-2 rounded-full bg-mint px-6 py-3 font-semibold text-brand-deep transition hover:-translate-y-0.5 hover:bg-brand hover:text-white">
+          <a href={LINKS.certificates} className="group inline-flex items-center gap-2 rounded-full bg-mint px-6 py-3 font-semibold text-brand-deep transition hover:-translate-y-0.5 hover:bg-brand-grad hover:text-white">
             <Icon name="check2" size={20} tone="current" /> Sertifikatlarni ko‘rish
           </a>
         </p>
@@ -162,40 +168,38 @@ export function Safety() {
 }
 
 /* ───────── Yangiliklar ───────── */
+// Shundan ko'p yangilik bo'lsa karusel, aks holda oddiy to'r (JS'siz)
+const NEWS_CAROUSEL_FROM = 4;
+
 export function News() {
+  // Mavjud ma'lumot manbai (lib/data NEWS) karta maydonlariga moslanadi; alohida post sahifasi yo'q —
+  // avvalgidek barcha kartalar blogga olib boradi. Kategoriya maydoni yo'q → UI'da ko'rsatilmaydi.
+  const posts: NewsPost[] = NEWS.map((n) => ({ title: n.title, excerpt: n.text, image: n.img, href: LINKS.blog }));
+  if (!posts.length) return null;
+
   return (
-    <section aria-labelledby="news-h" className="py-16 sm:py-24 lg:py-32">
-      <Wrap>
-        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-          <SectionHead
-            id="news-h"
-            align="left"
-            label="Yangiliklar"
-            title="Biz siz uchun takomillashmoqdamiz - yangiliklarni kuzatib boring!"
-            text="Yangiliklar, aksiyalar va salomatlik bo‘yicha foydali maslahatlardan xabardor bo‘lib turing."
-          />
-          <a href={LINKS.blog} className="inline-flex shrink-0 items-center gap-2 rounded-full border border-line px-6 py-3 font-semibold transition hover:border-ink">
-            Barcha maqolalar <ArrowRight className="size-4" />
-          </a>
-        </div>
-        {/* Mobil: gorizontal suriladigan karusel, keyingi karta chetdan ko'rinib turadi */}
-        <ul className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 md:mx-0 md:mt-12 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0">
-          {NEWS.map((n, i) => (
-            <li key={n.title} data-reveal style={d(i)} className="w-[82%] shrink-0 snap-start sm:w-[60%] md:w-auto">
-              <a href={LINKS.blog} className="group block">
-                <div className="relative aspect-square overflow-hidden rounded-[24px] bg-mist">
-                  <Image src={n.img} alt="" fill quality={60} sizes="(min-width: 768px) 33vw, (min-width: 640px) 60vw, 82vw" className="object-cover transition duration-700 group-hover:scale-[1.06]" />
-                  <span className="absolute right-4 bottom-4 grid size-12 translate-y-2 place-items-center rounded-full bg-white opacity-0 shadow-lg transition group-hover:translate-y-0 group-hover:opacity-100">
-                    <ArrowRight className="size-5 -rotate-45" />
-                  </span>
-                </div>
-                <h3 className="mt-4 text-lg leading-snug font-semibold group-hover:underline group-hover:underline-offset-4 sm:mt-5 sm:text-xl">{n.title}</h3>
-                <p className="mt-2 line-clamp-2 text-[15px] text-ink-soft sm:text-base">{n.text}</p>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </Wrap>
+    <section aria-labelledby="news-h" className={ns.section}>
+      <div className={ns.container}>
+        <SectionHead
+          id="news-h"
+          label="Yangiliklar"
+          title="Biz siz uchun takomillashmoqdamiz — yangiliklarni kuzatib boring!"
+          text="Yangiliklar, aksiyalar va salomatlik bo‘yicha foydali maslahatlardan xabardor bo‘lib turing."
+        />
+
+        {posts.length >= NEWS_CAROUSEL_FROM ? (
+          <NewsCarousel posts={posts} />
+        ) : (
+          <div className={ns.grid} style={{ "--n": posts.length } as React.CSSProperties}>
+            {posts.map((p) => <NewsCard key={p.title} post={p} />)}
+          </div>
+        )}
+
+        <Link href={LINKS.blog} className={ns.allLink}>
+          Barcha maqolalar
+          <span className={ns.allLinkIcon}><NewsArrowRight /></span>
+        </Link>
+      </div>
     </section>
   );
 }
@@ -231,7 +235,7 @@ export function Contact() {
             </div>
           </div>
           <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap">
-            <a href={LINKS.telegram} className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-ink/90">
+            <a href={LINKS.telegram} className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-grad px-6 py-3.5 font-semibold text-white transition hover:-translate-y-0.5 hover:brightness-105">
               <TelegramIcon /> Telegramda yozish
             </a>
             <a href={`mailto:${LINKS.email}`} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 font-semibold transition hover:-translate-y-0.5 hover:bg-white/70">
@@ -270,11 +274,11 @@ export function Footer() {
             <p className="mt-6 max-w-[32ch] text-white/70">Tibbiy xizmatlar uyingizda - tez, qulay, xavfsiz!</p>
             <div className="mt-6 flex gap-2">
               {socials.map(({ href, Icon, l }) => (
-                <a key={l} href={href} aria-label={l} className="grid size-11 place-items-center rounded-full bg-white/10 transition hover:-translate-y-1 hover:bg-brand hover:text-white">
+                <a key={l} href={href} aria-label={l} className="grid size-11 place-items-center rounded-full bg-white/10 transition hover:-translate-y-1 hover:bg-brand-grad hover:text-white">
                   <Icon />
                 </a>
               ))}
-              <a href={`mailto:${LINKS.email}`} aria-label="Email" className="grid size-11 place-items-center rounded-full bg-white/10 transition hover:-translate-y-1 hover:bg-brand hover:text-white">
+              <a href={`mailto:${LINKS.email}`} aria-label="Email" className="grid size-11 place-items-center rounded-full bg-white/10 transition hover:-translate-y-1 hover:bg-brand-grad hover:text-white">
                 <Mail className="size-5" />
               </a>
             </div>

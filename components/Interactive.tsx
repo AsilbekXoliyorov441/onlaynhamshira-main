@@ -16,11 +16,11 @@ export function Specialists() {
   // Mobilda dastlab 6 ta karta, qolgani "Yana ..." tugmasi bilan
   const MOBILE_LIMIT = 6;
   const [more, setMore] = useState(false);
+  const tones = ["bg-sky", "bg-peach", "bg-lilac", "bg-mint"];
   const list = useMemo(
     () => (group === "Barchasi" ? SPECIALISTS : SPECIALISTS.filter((s) => s.group === group)),
     [group],
   );
-  const tones = ["bg-sky", "bg-peach", "bg-lilac", "bg-mint"];
 
   return (
     <section id="specialists" aria-labelledby="spec-h" className="bg-mist py-16 sm:py-24 lg:py-32">
@@ -39,7 +39,7 @@ export function Specialists() {
               aria-selected={g === group}
               onClick={() => { setGroup(g); setMore(false); }}
               className={`shrink-0 rounded-full px-5 py-2.5 text-[15px] font-medium transition ${
-                g === group ? "bg-ink text-white shadow-lg" : "bg-white hover:-translate-y-0.5 hover:bg-white/60"
+                g === group ? "bg-brand-grad text-white shadow-lg" : "bg-white hover:-translate-y-0.5 hover:bg-white/60"
               }`}
             >
               {g}
@@ -84,20 +84,123 @@ export function Specialists() {
 }
 
 /* ───────── Fikrlar ───────── */
-export function Reviews() {
-  const track = useRef<HTMLUListElement>(null);
-  const [index, setIndex] = useState(0);
-  const step = () => (track.current?.querySelector("li")?.clientWidth ?? 360) + 12;
-  const scroll = (dir: 1 | -1) => track.current?.scrollBy({ left: dir * step(), behavior: "smooth" });
-  const goTo = (i: number) => track.current?.scrollTo({ left: i * step(), behavior: "smooth" });
+const N = REVIEWS.length;
+const COPIES = 3; // [nusxa][asl][nusxa] — o'rtadagi to'plamda turamiz, chetga yetganda sezdirmay qaytamiz
+const AUTOPLAY_MS = 4500;
 
-  // Faol karta indeksini kuzatish
+const REVIEW_TONES = ["bg-sky", "bg-peach", "bg-lilac", "bg-mint"];
+
+function ReviewCard({ r, i, hidden, className = "" }: { r: (typeof REVIEWS)[number]; i: number; hidden?: boolean; className?: string }) {
+  return (
+    <li aria-hidden={hidden || undefined} className={`${REVIEW_TONES[i % 4]} lift relative flex flex-col rounded-[28px] p-7 ${className}`}>
+      <span aria-hidden className="absolute top-3 right-6 font-serif text-[88px] leading-none text-ink/10">”</span>
+      <div className="flex gap-0.5" role="img" aria-label="5 yulduz">
+        {Array.from({ length: 5 }).map((_, k) => (
+          <Icon key={k} name="star" size={20} />
+        ))}
+      </div>
+      <blockquote className="mt-5 flex-1 text-lg leading-relaxed">{r.text}</blockquote>
+      <div className="mt-7 flex items-center gap-3">
+        <Image src={r.img} alt="" width={52} height={52} className="size-13 rounded-full object-cover ring-4 ring-white/70" draggable={false} />
+        <div>
+          <p className="font-semibold">{r.name}</p>
+          <p className="text-sm text-ink-soft">{r.city}</p>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+const REVIEWS_HEAD = (
+  <SectionHead
+    id="rev-h"
+    wide
+    label="Mijozlar fikrlari"
+    title="Minglab mamnun mijozlar allaqachon Onlayn Hamshirani tanlab bo‘lishdi!"
+    text="Navbatsiz va kutishsiz professional tibbiy xizmat - minglab foydalanuvchilar bizga ishonch bildirmoqda."
+  />
+);
+// Shundan ko'p fikr bo'lsa cheksiz karusel, aks holda oddiy to'r
+const REVIEWS_CAROUSEL_FROM = 4;
+
+export function Reviews() {
+  if (REVIEWS.length < REVIEWS_CAROUSEL_FROM) {
+    return (
+      <section id="reviews" aria-labelledby="rev-h" className="py-16 sm:py-24 lg:py-32">
+        <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
+          {REVIEWS_HEAD}
+          <ul className="mt-10 grid justify-center gap-3 sm:mt-12 md:grid-cols-[repeat(auto-fit,minmax(0,420px))]">
+            {REVIEWS.map((r, i) => <ReviewCard key={r.name} r={r} i={i} />)}
+          </ul>
+        </div>
+      </section>
+    );
+  }
+  return <ReviewsCarousel />;
+}
+
+function ReviewsCarousel() {
+  const track = useRef<HTMLUListElement>(null);
+  const [index, setIndex] = useState(0); // 0..N-1 (nuqtalar uchun)
+  // Avtoaylanish faol nuqtadagi progress animatsiyasiga bog'langan: u tugaganda keyingi karta.
+  // Shu holatlarda to'xtaydi (animation-play-state: paused):
+  const [hover, setHover] = useState(false); // sichqoncha kartalar yoki boshqaruv ustida
+  const [touching, setTouching] = useState(false); // telefonda surilmoqda
+  const [visible, setVisible] = useState(false); // bo'lim ekranda
+  const [reduced, setReduced] = useState(false); // prefers-reduced-motion → avtoaylanish yo'q
+  const paused = hover || touching || !visible;
+
+  const step = () => (track.current?.querySelector("li")?.clientWidth ?? 360) + 12;
+  // Joriy kartaga tekislangan holda ±1 (ketma-ket bosishlar animatsiya o'rtasida ham to'g'ri hisoblanadi)
+  const scroll = (dir: 1 | -1) => {
+    const el = track.current;
+    if (!el) return;
+    const st = step();
+    el.scrollTo({ left: (Math.round(el.scrollLeft / st) + dir) * st, behavior: "smooth" });
+  };
+  const goTo = (i: number) => track.current?.scrollTo({ left: (N + i) * step(), behavior: "smooth" });
+
+  /** Animatsiyasiz siljitish (cheksiz aylanish uchun "teleport") */
+  const jump = (el: HTMLElement, left: number) => {
+    el.style.scrollSnapType = "none";
+    el.style.scrollBehavior = "auto";
+    el.scrollLeft = left;
+    requestAnimationFrame(() => { el.style.scrollSnapType = ""; el.style.scrollBehavior = ""; });
+  };
+
   useEffect(() => {
     const el = track.current;
     if (!el) return;
-    const onScroll = () => setIndex(Math.round(el.scrollLeft / step()));
+    setReduced(matchMedia("(prefers-reduced-motion: reduce)").matches);
+    jump(el, N * step()); // o'rtadagi to'plamdan boshlaymiz
+
+    let settle = 0;
+    const onScroll = () => {
+      const st = step();
+      const raw = Math.round(el.scrollLeft / st);
+      setIndex(((raw % N) + N) % N);
+      // Skroll to'xtagach: o'rtadagi to'plamdan chiqib ketgan bo'lsak, N kartaga orqaga/oldinga sakraymiz
+      clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        if (drag.current) return;
+        const i = Math.round(el.scrollLeft / st);
+        if (i < N || i >= 2 * N) jump(el, el.scrollLeft + (i < N ? N : -N) * st);
+      }, 140);
+    };
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { threshold: 0.3 });
+    io.observe(el);
+
+    // Oyna o'lchami o'zgarsa, joriy kartaga qayta tekislash
+    const onResize = () => jump(el, (N + Math.round(el.scrollLeft / step()) % N) * step());
+    window.addEventListener("resize", onResize);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      clearTimeout(settle);
+      io.disconnect();
+    };
   }, []);
 
   // Desktop'da sichqoncha bilan sudrab aylantirish
@@ -129,67 +232,79 @@ export function Reviews() {
     el.scrollTo({ left: i * step(), behavior: "smooth" });
     setTimeout(() => { el.style.scrollSnapType = ""; }, 400);
   };
-  const tones = ["bg-sky", "bg-peach", "bg-lilac", "bg-mint"];
+  // Faqat haqiqiy sichqoncha: sensorli ekranda tegish "hover" bo'lib qotib qolmasin
+  const hoverProps = {
+    onPointerEnter: (e: React.PointerEvent) => { if (e.pointerType === "mouse") setHover(true); },
+    onPointerLeave: (e: React.PointerEvent) => { if (e.pointerType === "mouse") setHover(false); },
+  };
+
+  const items = Array.from({ length: COPIES }, (_, c) => REVIEWS.map((r, i) => ({ r, i, c }))).flat();
+  const arrowCls = "grid size-10 shrink-0 place-items-center rounded-full transition active:scale-95 sm:size-11";
 
   return (
     <section id="reviews" aria-labelledby="rev-h" className="py-16 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
-        <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
-          <SectionHead
-            id="rev-h"
-            align="left"
-            label="Mijozlar fikrlari"
-            title="Minglab mamnun mijozlar allaqachon Onlayn Hamshirani tanlab bo‘lishdi!"
-            text="Navbatsiz va kutishsiz professional tibbiy xizmat - minglab foydalanuvchilar bizga ishonch bildirmoqda."
-          />
-          <div className="flex gap-2">
-            <button onClick={() => scroll(-1)} disabled={index === 0} aria-label="Oldingi fikr" className="grid size-14 place-items-center rounded-full bg-mint transition hover:bg-brand hover:text-white active:scale-95 disabled:opacity-40 disabled:hover:bg-mint">
-              <ChevronLeft className="size-6" />
-            </button>
-            <button onClick={() => scroll(1)} disabled={index >= REVIEWS.length - 1} aria-label="Keyingi fikr" className="grid size-14 place-items-center rounded-full bg-mint transition hover:bg-brand hover:text-white active:scale-95 disabled:opacity-40 disabled:hover:bg-mint">
-              <ChevronRight className="size-6" />
-            </button>
-          </div>
-        </div>
-      </div>
+      <div className="mx-auto max-w-[1320px] px-4 sm:px-6">{REVIEWS_HEAD}</div>
       <ul
         ref={track}
+        {...hoverProps}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        data-reveal
-        className="no-scrollbar mt-12 flex cursor-grab snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 select-none active:cursor-grabbing sm:scroll-px-[max(24px,calc((100vw-1320px)/2+24px))] sm:px-[max(24px,calc((100vw-1320px)/2+24px))]"
+        onTouchStart={() => setTouching(true)}
+        onTouchEnd={() => setTouching(false)}
+        onTouchCancel={() => setTouching(false)}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+          e.preventDefault();
+          scroll(e.key === "ArrowRight" ? 1 : -1);
+        }}
+        aria-roledescription="karusel"
+        aria-label="Mijozlar fikrlari"
+        className="no-scrollbar mt-10 flex cursor-grab snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 py-2 outline-none select-none focus-visible:ring-3 focus-visible:ring-brand-teal/60 active:cursor-grabbing sm:mt-12 sm:scroll-px-[max(24px,calc((100vw-1320px)/2+24px))] sm:px-[max(24px,calc((100vw-1320px)/2+24px))]"
       >
-        {REVIEWS.map((r, i) => (
-          <li key={r.name} className={`${tones[i % 4]} lift relative flex w-[86vw] max-w-[420px] shrink-0 snap-start flex-col rounded-[28px] p-7`}>
-            <span aria-hidden className="absolute top-3 right-6 font-serif text-[88px] leading-none text-ink/10">”</span>
-            <div className="flex gap-0.5" role="img" aria-label="5 yulduz">
-              {Array.from({ length: 5 }).map((_, k) => (
-                <Icon key={k} name="star" size={20} />
-              ))}
-            </div>
-            <blockquote className="mt-5 flex-1 text-lg leading-relaxed">{r.text}</blockquote>
-            <div className="mt-7 flex items-center gap-3">
-              <Image src={r.img} alt="" width={52} height={52} className="size-13 rounded-full object-cover ring-4 ring-white/70" draggable={false} />
-              <div>
-                <p className="font-semibold">{r.name}</p>
-                <p className="text-sm text-ink-soft">{r.city}</p>
-              </div>
-            </div>
-          </li>
+        {items.map(({ r, i, c }) => (
+          // Nusxalar ekran o'quvchidan yashirin — fikrlar bir marta o'qiladi
+          <ReviewCard key={`${c}-${r.name}`} r={r} i={i} hidden={c !== 1} className="w-[86vw] max-w-[420px] shrink-0 snap-start" />
         ))}
       </ul>
-      <div className="mt-8 flex justify-center gap-2" aria-label="Fikrlar sahifalari">
-        {REVIEWS.map((r, i) => (
-          <button
-            key={r.name}
-            onClick={() => goTo(i)}
-            aria-label={`${i + 1}-fikr`}
-            aria-current={i === index}
-            className={`h-2.5 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-brand-deep" : "w-2.5 bg-line hover:bg-ink/30"}`}
-          />
-        ))}
+
+      {/* Kartalar ostida: bitta pill ichida ← nuqtalar → */}
+      <div className="mt-6 flex justify-center px-4 sm:mt-8">
+        <div {...hoverProps} className="flex items-center gap-1 rounded-full bg-white p-1.5 shadow-[0_14px_34px_-18px_rgb(16_41_58/0.45)] ring-1 ring-line sm:gap-2">
+          <button onClick={() => scroll(-1)} aria-label="Oldingi fikr" className={`${arrowCls} bg-mist text-ink hover:bg-line`}>
+            <ChevronLeft className="size-5" />
+          </button>
+
+          <div className="flex items-center px-1" role="group" aria-label="Fikrlar sahifalari">
+            {REVIEWS.map((r, i) => {
+              const on = i === index;
+              return (
+                <button key={r.name} onClick={() => goTo(i)} aria-label={`${i + 1}-fikr`} aria-current={on} className="group grid h-10 min-w-5 place-items-center sm:min-w-6">
+                  <span className={`relative block h-2 overflow-hidden rounded-full transition-all duration-300 ${on ? "w-8 bg-line sm:w-10" : "w-2 bg-line group-hover:bg-ink/30"}`}>
+                    {on && (
+                      // key: karta almashganda progress noldan boshlanadi; tugaganda — keyingi karta
+                      <span
+                        key={index}
+                        className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-brand to-brand-blue"
+                        style={reduced ? undefined : {
+                          animation: `dot-progress ${AUTOPLAY_MS}ms linear forwards`,
+                          animationPlayState: paused ? "paused" : "running",
+                        }}
+                        onAnimationEnd={() => scroll(1)}
+                      />
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button onClick={() => scroll(1)} aria-label="Keyingi fikr" className={`${arrowCls} bg-brand-grad text-white shadow-[0_10px_22px_-12px_rgb(56_197_177/0.9)] hover:brightness-105`}>
+            <ChevronRight className="size-5" />
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -214,7 +329,7 @@ export function Faq() {
             <p className="font-semibold">Javob topmadingizmi?</p>
             <p className="mt-1 text-ink-soft">Operatorlar 24/7 yordam beradi.</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <a href={LINKS.telegram} className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-[15px] font-semibold text-white">
+              <a href={LINKS.telegram} className="inline-flex items-center gap-2 rounded-full bg-brand-grad px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-105">
                 <TelegramIcon className="size-4" /> Telegram
               </a>
               <a href={`tel:${LINKS.phone}`} className="inline-flex items-center gap-2 rounded-full border border-line px-5 py-3 text-[15px] font-semibold">
@@ -227,29 +342,33 @@ export function Faq() {
           {FAQ.map((f, i) => {
             const on = open === i;
             return (
-              <li key={f.q} data-reveal style={{ "--d": Math.min(i, 4) } as React.CSSProperties} className={`rounded-[22px] transition-[background-color,box-shadow] ${on ? "bg-white shadow-[0_16px_40px_-24px_rgb(16_41_58/0.35)]" : "bg-white/60 hover:bg-white"}`}>
-                <h3>
-                  <button
-                    onClick={() => setOpen(on ? null : i)}
-                    aria-expanded={on}
-                    aria-controls={`faq-${i}`}
-                    id={`faq-q-${i}`}
-                    className="flex w-full items-center gap-3 px-5 py-4 text-left text-base leading-snug font-medium sm:gap-4 sm:px-7 sm:py-5 sm:text-lg"
+              // data-reveal o'zgarmas className'li <li>da: holat klasslari ichki div'da,
+              // aks holda React className'ni qayta yozib, "is-in"ni o'chirib yuboradi
+              <li key={f.q} data-reveal style={{ "--d": Math.min(i, 4) } as React.CSSProperties}>
+                <div className={`rounded-[22px] transition-[background-color,box-shadow] ${on ? "bg-white shadow-[0_16px_40px_-24px_rgb(16_41_58/0.35)]" : "bg-white/60 hover:bg-white"}`}>
+                  <h3>
+                    <button
+                      onClick={() => setOpen(on ? null : i)}
+                      aria-expanded={on}
+                      aria-controls={`faq-${i}`}
+                      id={`faq-q-${i}`}
+                      className="flex w-full items-center gap-3 px-5 py-4 text-left text-base leading-snug font-medium sm:gap-4 sm:px-7 sm:py-5 sm:text-lg"
+                    >
+                      <span className="flex-1">{f.q}</span>
+                      <span className={`grid size-9 shrink-0 place-items-center rounded-full transition duration-300 sm:size-10 ${on ? "rotate-45 bg-brand-grad text-white" : "bg-mist"}`}>
+                        <Plus className="size-5" aria-hidden />
+                      </span>
+                    </button>
+                  </h3>
+                  <div
+                    id={`faq-${i}`}
+                    role="region"
+                    aria-labelledby={`faq-q-${i}`}
+                    className={`grid transition-[grid-template-rows] duration-300 ${on ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                   >
-                    <span className="flex-1">{f.q}</span>
-                    <span className={`grid size-9 shrink-0 place-items-center rounded-full transition duration-300 sm:size-10 ${on ? "rotate-45 bg-brand-grad text-white" : "bg-mist"}`}>
-                      <Plus className="size-5" aria-hidden />
-                    </span>
-                  </button>
-                </h3>
-                <div
-                  id={`faq-${i}`}
-                  role="region"
-                  aria-labelledby={`faq-q-${i}`}
-                  className={`grid transition-[grid-template-rows] duration-300 ${on ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-                >
-                  <div className="overflow-hidden">
-                    <p className="max-w-[68ch] px-5 pb-5 text-[15px] leading-relaxed text-ink-soft sm:px-7 sm:pb-6 sm:text-base">{f.a}</p>
+                    <div className="overflow-hidden">
+                      <p className="max-w-[68ch] px-5 pb-5 text-[15px] leading-relaxed text-ink-soft sm:px-7 sm:pb-6 sm:text-base">{f.a}</p>
+                    </div>
                   </div>
                 </div>
               </li>
