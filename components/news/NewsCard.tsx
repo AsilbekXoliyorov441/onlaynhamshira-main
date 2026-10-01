@@ -16,7 +16,7 @@ export function NewsCard({ post }: { post: NewsPost }) {
   return (
     <Link href={post.href} className={s.card} draggable={false}>
       <div className={s.media}>
-        <Image src={post.image} alt={post.title} fill quality={60} sizes="(max-width: 760px) 50vw, 390px" draggable={false} />
+        <Image src={post.image} alt="" fill quality={60} sizes="(max-width: 760px) 50vw, 390px" draggable={false} />
       </div>
 
       <div className={s.body}>

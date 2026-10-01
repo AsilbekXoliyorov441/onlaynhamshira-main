@@ -95,8 +95,10 @@ export default function Header() {
 
       {/* Mobil menyu */}
       <div
-        className={`fixed inset-0 z-[60] lg:hidden ${menu ? "" : "pointer-events-none"}`}
+        // Yopiq menyu invisible: ekrandan tashqaridagi rasmlari LCP nomzodi bo'lmaydi; visibility yopilish animatsiyasi tugagach o'chadi
+        className={`fixed inset-0 z-[60] transition-[visibility] duration-300 lg:hidden ${menu ? "visible" : "pointer-events-none invisible"}`}
         aria-hidden={!menu}
+        inert={!menu}
       >
         <div
           onClick={() => setMenu(false)}

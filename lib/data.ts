@@ -17,7 +17,6 @@ export const LINKS = {
   certificates: "https://onlaynhamshira.uz/certificates",
   expert: "https://onlaynhamshira.uz/expert",
   blog: "https://onlaynhamshira.uz/blog",
-  map: "https://yandex.ru/map-widget/v1/?um=constructor%3A4dbf6bc8bd0d6dc4551bef4bb775c4f9881e246ceb965907737eea25350d9e16&source=constructor",
 };
 
 export const IMAGES = {

@@ -53,16 +53,16 @@ export function HeroBooking() {
                 })}
               </div>
 
-              <dl className="mt-5 grid grid-cols-2 gap-2 text-sm">
-                <div className="flex items-center gap-2">
+              <ul className="mt-5 grid grid-cols-2 gap-2 text-sm">
+                <li className="flex items-center gap-2">
                   <Icon name="clock" size={18} />
-                  <div><dt className="sr-only">Yetib kelish</dt><dd>30–90 daqiqada</dd></div>
-                </div>
-                <div className="flex items-center gap-2">
+                  <span><span className="sr-only">Yetib kelish: </span>30–90 daqiqada</span>
+                </li>
+                <li className="flex items-center gap-2">
                   <Icon name="wallet" size={18} />
-                  <div><dt className="sr-only">To‘lov</dt><dd>Xizmatdan so‘ng to‘lov</dd></div>
-                </div>
-              </dl>
+                  <span>Xizmatdan so‘ng to‘lov</span>
+                </li>
+              </ul>
 
               <a
                 href={LINKS.webApp}
@@ -77,7 +77,7 @@ export function HeroBooking() {
               >
                 <Phone className="size-4" /> <span className="max-sm:hidden">yoki qo‘ng‘iroq qiling:</span><span className="sm:hidden">yoki qo‘ng‘iroq:</span> {LINKS.phoneLabel}
               </a>
-              <p className="mt-1 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft/80">
+              <p className="mt-1 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
                 <ShieldCheck className="size-3.5 shrink-0" /> Hayot uchun xavfli holatlarda darhol 103 ga qo‘ng‘iroq qiling
               </p>
             </div>

@@ -232,7 +232,8 @@
   align-items: flex-start;
   gap: 14px;
   color: #fff;
-  background: linear-gradient(180deg, rgb(18 128 62 / 0.25) 0%, rgb(11 117 113 / 0.95) 48%, rgb(13 97 155 / 0.98) 100%);
+  /* Tepasi to'liq shaffof — rasm ko'rinib turadi; pastga qarab to'q brend gradienti */
+  background: linear-gradient(180deg, transparent 0%, rgb(11 117 113 / 0.55) 35%, rgb(11 117 113 / 0.95) 58%, rgb(13 97 155 / 0.98) 100%);
   opacity: 0;
   transition: opacity 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
   pointer-events: none;

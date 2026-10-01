@@ -51,7 +51,7 @@ export function useCarousel(total: number) {
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; sync(); });
     };
-    sync();
+    onScroll(); // birinchi o'lchov keyingi kadrda
     el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {

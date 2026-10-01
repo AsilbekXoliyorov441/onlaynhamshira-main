@@ -8,6 +8,7 @@ import { ArrowRight, Globe, Mail } from "lucide-react";
 import { BENEFITS, IMAGES, LINKS, NEWS, SAFETY } from "@/lib/data";
 import { StoreButtons } from "./DownloadModal";
 import { AppPhone } from "./AppPhone";
+import { ContactMap } from "./map/ContactMap";
 import { InstagramIcon, Logo, TelegramIcon, YoutubeIcon } from "./StoreIcons";
 import { Icon, IconTile, type IconName } from "./Icon";
 
@@ -24,7 +25,7 @@ export function SectionHead({
         <span className="size-1.5 rounded-full bg-brand-deep" />
         {label}
       </p>
-      <h2 id={id} className="mt-3 text-[32px] leading-[1.08] font-semibold tracking-[-0.025em] text-balance sm:text-5xl">
+      <h2 id={id} className="mt-3 text-[clamp(26px,8.5vw,32px)] leading-[1.08] font-semibold tracking-[-0.025em] text-balance sm:text-5xl">
         {title}
       </h2>
       {text && <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-pretty text-ink-soft">{text}</p>}
@@ -209,19 +210,13 @@ export function Contact() {
   return (
     <section id="contact" aria-labelledby="contact-h" className="px-3 pb-3 sm:px-4">
       <div className="mx-auto grid max-w-[1400px] gap-3 lg:grid-cols-2">
-        <div data-reveal="scale" className="relative order-2 min-h-[280px] overflow-hidden rounded-[28px] bg-mist sm:min-h-[420px] sm:rounded-[32px] lg:order-none">
-          <iframe
-            src={LINKS.map}
-            title="Onlayn Hamshira manzili xaritada"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full border-0"
-          />
-        </div>
+        {/* MapLibre + OpenFreeMap: reklamasiz, brend markerli xarita */}
+        <ContactMap className="order-2 min-h-[320px] rounded-[28px] sm:min-h-[420px] sm:rounded-[32px] lg:order-none" />
         <div data-reveal="scale" style={d(1)} className="relative overflow-hidden rounded-[28px] bg-mint p-6 sm:rounded-[32px] sm:p-12">
           <div aria-hidden className="pointer-events-none absolute top-8 right-8 hidden animate-float sm:block"><Icon name="telephone" size={76} tone="tile" className="rotate-6" /></div>
           <h2 id="contact-h" className="sr-only">Aloqa</h2>
           <p className="text-[15px] font-medium text-brand-deep">Telefon:</p>
-          <a href={`tel:${LINKS.phone}`} className="mt-2 block text-[28px] font-bold tracking-tight whitespace-nowrap tabular-nums hover:underline min-[400px]:text-[32px] sm:text-5xl">
+          <a href={`tel:${LINKS.phone}`} className="mt-2 block text-[clamp(22px,7.4vw,32px)] font-bold tracking-tight whitespace-nowrap tabular-nums hover:underline sm:text-5xl">
             +998-78-113-96-16
           </a>
           <div className="mt-8 grid gap-6 sm:mt-10 sm:grid-cols-2 sm:gap-8">
@@ -284,9 +279,9 @@ export function Footer() {
             </div>
           </div>
           <nav aria-label="Footer">
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-1">
               {links.map((x) => (
-                <li key={x.l}><a href={x.h} className="text-white/80 transition hover:text-brand">{x.l}</a></li>
+                <li key={x.l}><a href={x.h} className="inline-block py-1 text-white/80 transition hover:text-brand">{x.l}</a></li>
               ))}
             </ul>
           </nav>

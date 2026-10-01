@@ -7,7 +7,7 @@
   --color-brand-hover: #45cf54;
   --color-brand-teal: #38c5b1;
   --color-brand-blue: #25b6e9;
-  --color-brand-deep: #17843a;
+  --color-brand-deep: #136e33;
   --color-sky: #d4f0fb;
   --color-sky-deep: #1aa6d9;
   --color-peach: #fdebdb;
@@ -94,9 +94,45 @@ body {
 .js [data-reveal].is-in { opacity: 1; transform: none; }
 
 /* Hero birinchi ekranda — JS/IntersectionObserver kutmasdan, birinchi chizishdayoq animatsiya
-   boshlanadi (aks holda LCP rasmi hydration tugaguncha ko'rinmay turadi) */
-@keyframes hero-in { from { opacity: 0; transform: scale(0.96); } }
+   boshlanadi (aks holda LCP rasmi hydration tugaguncha ko'rinmay turadi).
+   0.01 — ko'zga 0 bilan bir xil, lekin Chrome opacity:0 elementni LCP nomzodi deb hisoblamaydi */
+@keyframes hero-in { from { opacity: 0.01; transform: scale(0.96); } }
 .hero-in { animation: hero-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d, 0) * 80ms) both; }
+
+/* ── Ekrandan tashqaridagi bo'limlar: ko'rinishga yaqinlashguncha style/layout/paint qilinmaydi ──
+   Mobilda birinchi yuklashdagi main-thread ishini (TBT) keskin kamaytiradi; tashqi ko'rinish o'zgarmaydi.
+   Balandliklar ~390–412px kenglikda o'lchangan — anchor havolalar (#faq va h.k.) to'g'ri joyga tushishi uchun.
+   "auto" — bo'lim bir marta chizilgach, haqiqiy balandligi eslab qolinadi.
+   Desktopda Lenis skroll maqsadini oldindan hisoblaydi, shuning uchun u yerda yoqilmagan.
+   html.cv-off — anchor havola bosilganda / #hash bilan ochilganda (layout.tsx dagi skript):
+   barcha bo'limlar chiziladi, aks holda skroll noto'g'ri joyga tushadi. */
+@media (max-width: 1023.98px) {
+  html:not(.cv-off) :is(#services, #about, [aria-labelledby="ben-h"], #prices, [aria-labelledby="app-h"], [aria-labelledby="safe-h"],
+  #specialists, #reviews, [aria-labelledby="news-h"], #faq, #contact, main ~ footer) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto var(--cv-h, 1000px);
+  }
+  #services { --cv-h: 1421px; }
+  #about { --cv-h: 1258px; }
+  [aria-labelledby="ben-h"] { --cv-h: 1330px; }
+  #prices { --cv-h: 1250px; }
+  [aria-labelledby="app-h"] { --cv-h: 894px; }
+  [aria-labelledby="safe-h"] { --cv-h: 1121px; }
+  #specialists { --cv-h: 1076px; }
+  #reviews { --cv-h: 868px; }
+  [aria-labelledby="news-h"] { --cv-h: 1047px; }
+  #faq { --cv-h: 1540px; }
+  #contact { --cv-h: 768px; }
+  main ~ footer { --cv-h: 968px; }
+}
+
+/* ── Aloqa xaritasidagi marker (MapLibre) ── */
+.oh-pin { position: relative; width: 46px; height: 57px; cursor: default; }
+.oh-pin img { position: relative; display: block; width: 46px; height: 57px; filter: drop-shadow(0 10px 14px rgb(16 41 58 / 0.35)); animation: oh-pin-drop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+.oh-pin-pulse { position: absolute; left: 50%; bottom: -6px; width: 26px; height: 12px; margin-left: -13px; border-radius: 50%; background: rgb(37 182 233 / 0.45); animation: oh-pin-pulse 2s ease-out infinite; }
+@keyframes oh-pin-drop { from { opacity: 0; transform: translateY(-24px); } }
+@keyframes oh-pin-pulse { 0% { transform: scale(0.5); opacity: 0.9; } 100% { transform: scale(2.6); opacity: 0; } }
+.maplibregl-ctrl-group { border-radius: 14px !important; box-shadow: 0 10px 24px -14px rgb(16 41 58 / 0.5) !important; }
 
 /* ── Kartalar: hover'da ko'tariladi, 3D ikonka "jonlanadi" ── */
 .lift {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight, ChevronLeft, ChevronRight, MessageCircle, Phone, Plus } from "lucide-react";
 import { FAQ, LINKS, REVIEWS, SPECIALISTS } from "@/lib/data";
@@ -31,7 +31,7 @@ export function Specialists() {
           title="Barcha zarur mutaxassislar yagona ilovada"
           text="Bizning platformamizda turli xil tibbiy yordam ko‘rsatish uchun malakali mutaxassislar ishlaydi."
         />
-        <div role="tablist" aria-label="Mutaxassis turi" data-reveal className="no-scrollbar -mx-4 mt-8 flex justify-start gap-2 overflow-x-auto px-4 sm:mx-0 sm:mt-10 sm:justify-center sm:px-0">
+        <div role="tablist" aria-label="Mutaxassis turi" data-reveal className="no-scrollbar -mx-4 mt-8 flex justify-start gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mt-10 sm:justify-center sm:px-0">
           {GROUPS.map((g) => (
             <button
               key={g}
@@ -149,6 +149,10 @@ function ReviewsCarousel() {
   const [visible, setVisible] = useState(false); // bo'lim ekranda
   const [reduced, setReduced] = useState(false); // prefers-reduced-motion → avtoaylanish yo'q
   const paused = hover || touching || !visible;
+  // Dastlab faqat asl to'plam render bo'ladi (birinchi yuklashda hydration 3 baravar yengil);
+  // chetdagi nusxalar bo'lim ekranga yaqinlashganda qo'shiladi
+  const [full, setFull] = useState(false);
+  const fullRef = useRef(false);
 
   const step = () => (track.current?.querySelector("li")?.clientWidth ?? 360) + 12;
   // Joriy kartaga tekislangan holda ±1 (ketma-ket bosishlar animatsiya o'rtasida ham to'g'ri hisoblanadi)
@@ -172,7 +176,12 @@ function ReviewsCarousel() {
     const el = track.current;
     if (!el) return;
     setReduced(matchMedia("(prefers-reduced-motion: reduce)").matches);
-    jump(el, N * step()); // o'rtadagi to'plamdan boshlaymiz
+    const near = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      near.disconnect();
+      setFull(true);
+    }, { rootMargin: "800px 0px" });
+    near.observe(el);
 
     let settle = 0;
     const onScroll = () => {
@@ -182,7 +191,7 @@ function ReviewsCarousel() {
       // Skroll to'xtagach: o'rtadagi to'plamdan chiqib ketgan bo'lsak, N kartaga orqaga/oldinga sakraymiz
       clearTimeout(settle);
       settle = window.setTimeout(() => {
-        if (drag.current) return;
+        if (drag.current || !fullRef.current) return;
         const i = Math.round(el.scrollLeft / st);
         if (i < N || i >= 2 * N) jump(el, el.scrollLeft + (i < N ? N : -N) * st);
       }, 140);
@@ -193,15 +202,25 @@ function ReviewsCarousel() {
     io.observe(el);
 
     // Oyna o'lchami o'zgarsa, joriy kartaga qayta tekislash
-    const onResize = () => jump(el, (N + Math.round(el.scrollLeft / step()) % N) * step());
+    const onResize = () => { if (fullRef.current) jump(el, (N + Math.round(el.scrollLeft / step()) % N) * step()); };
     window.addEventListener("resize", onResize);
     return () => {
+      near.disconnect();
       el.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       clearTimeout(settle);
       io.disconnect();
     };
   }, []);
+
+  // Nusxalar qo'shilgach — o'rtadagi to'plamga, joriy kartaga (chizishdan oldin, sakrash ko'rinmasin)
+  useLayoutEffect(() => {
+    const el = track.current;
+    if (!full || !el) return;
+    fullRef.current = true;
+    jump(el, (N + index) * step());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- faqat nusxalar qo'shilgan paytdagi indeks kerak
+  }, [full]);
 
   // Desktop'da sichqoncha bilan sudrab aylantirish
   const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
@@ -238,7 +257,9 @@ function ReviewsCarousel() {
     onPointerLeave: (e: React.PointerEvent) => { if (e.pointerType === "mouse") setHover(false); },
   };
 
-  const items = Array.from({ length: COPIES }, (_, c) => REVIEWS.map((r, i) => ({ r, i, c }))).flat();
+  const items = full
+    ? Array.from({ length: COPIES }, (_, c) => REVIEWS.map((r, i) => ({ r, i, c }))).flat()
+    : REVIEWS.map((r, i) => ({ r, i, c: 1 }));
   const arrowCls = "grid size-10 shrink-0 place-items-center rounded-full transition active:scale-95 sm:size-11";
 
   return (
@@ -281,7 +302,7 @@ function ReviewsCarousel() {
             {REVIEWS.map((r, i) => {
               const on = i === index;
               return (
-                <button key={r.name} onClick={() => goTo(i)} aria-label={`${i + 1}-fikr`} aria-current={on} className="group grid h-10 min-w-5 place-items-center sm:min-w-6">
+                <button key={r.name} onClick={() => goTo(i)} aria-label={`${i + 1}-fikr`} aria-current={on} className="group grid h-10 min-w-6 place-items-center">
                   <span className={`relative block h-2 overflow-hidden rounded-full transition-all duration-300 ${on ? "w-8 bg-line sm:w-10" : "w-2 bg-line group-hover:bg-ink/30"}`}>
                     {on && (
                       // key: karta almashganda progress noldan boshlanadi; tugaganda — keyingi karta
@@ -326,8 +347,8 @@ export function Faq() {
           />
           <div data-reveal className="relative mt-6 overflow-hidden rounded-[24px] bg-white p-5 sm:mt-8 sm:p-6">
             <div aria-hidden className="absolute top-4 right-4 animate-float"><Icon name="chat" size={52} tone="tile" /></div>
-            <p className="font-semibold">Javob topmadingizmi?</p>
-            <p className="mt-1 text-ink-soft">Operatorlar 24/7 yordam beradi.</p>
+            <p className="pr-16 font-semibold">Javob topmadingizmi?</p>
+            <p className="mt-1 pr-16 text-ink-soft">Operatorlar 24/7 yordam beradi.</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <a href={LINKS.telegram} className="inline-flex items-center gap-2 rounded-full bg-brand-grad px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-105">
                 <TelegramIcon className="size-4" /> Telegram
@@ -403,7 +424,7 @@ export function MobileCTA() {
         <a href={LINKS.telegram} aria-label="Telegramda yozish" className="grid size-14 shrink-0 place-items-center rounded-2xl bg-mist">
           <MessageCircle className="size-5" />
         </a>
-        <a href={LINKS.webApp} className="flex flex-1 items-center justify-center rounded-2xl bg-brand-grad text-white text-[17px] font-bold">
+        <a href={LINKS.webApp} className="flex min-w-0 flex-1 items-center justify-center rounded-2xl bg-brand-grad px-2 text-center text-[clamp(15px,4.8vw,17px)] leading-tight font-bold text-white">
           Hamshira chaqirish
         </a>
       </div>

@@ -92,7 +92,8 @@ function trackScrollProgress() {
     document.documentElement.style.setProperty("--scroll-p", String(max > 0 ? Math.min(1, window.scrollY / max) : 0));
   };
   const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-  update();
+  // Birinchi o'lchov keyingi kadrda — hydration paytida majburiy layout (forced reflow) bo'lmasin
+  onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
   return () => {
@@ -131,7 +132,7 @@ function useScrolledPast(ratio: number) {
       setPast(max > 0 && window.scrollY / max > ratio);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
   }, [ratio]);

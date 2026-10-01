@@ -99,7 +99,7 @@ export default function HowItWorks() {
           {STEPS.map((st, i) => {
             const on = i === active;
             return (
-              <li key={st.title}>
+              <li key={st.title} role="presentation">
                 <button
                   ref={(el) => { stepRefs.current[i] = el; }}
                   className={[s.step, on && s.active, i < active && s.past].filter(Boolean).join(" ")}

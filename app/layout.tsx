@@ -56,11 +56,16 @@ const jsonLd = {
   areaServed: ["Toshkent", "Samarqand", "Farg‘ona", "Namangan", "Nukus", "Marg‘ilon"],
 };
 
+// html.js — reveal animatsiyalari uchun. html.cv-off — anchorga o'tishda content-visibility o'chadi
+// (globals.css), aks holda chizilmagan bo'limlar sabab skroll noto'g'ri joyga tushadi
+const CV_SCRIPT = `(function(h){h.classList.add('js');if(location.hash)h.classList.add('cv-off');
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href*="#"]');if(a&&a.hash)h.classList.add('cv-off')},true)})(document.documentElement)`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="uz" className={onest.variable} suppressHydrationWarning>
       <body>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <script dangerouslySetInnerHTML={{ __html: CV_SCRIPT }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
