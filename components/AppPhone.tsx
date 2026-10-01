@@ -50,7 +50,7 @@ function setupGL(canvas: HTMLCanvasElement) {
  *  2) bo'lim ekranga yaqinlashganda — video yuklanadi va WebGL canvas'ga chiziladi
  *  WebGL bo'lmasa yoki prefers-reduced-motion'da poster qoladi.
  */
-export function AppPhone({ className = "" }: { className?: string }) {
+export function AppPhone({ alt, className = "" }: { alt: string; className?: string }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const video = useRef<HTMLVideoElement>(null);
@@ -108,7 +108,7 @@ export function AppPhone({ className = "" }: { className?: string }) {
       {/* eslint-disable-next-line @next/next/no-img-element -- 20KB poster, video tayyor bo'lguncha */}
       <img
         src={POSTER}
-        alt="Onlayn Hamshira ilovasi: bosh sahifa, AI chat, buyurtma va hamshira tanlash"
+        alt={alt}
         width={W}
         height={H}
         loading="lazy"

@@ -1,8 +1,9 @@
 import s from "./News.module.css";
+import { fill } from "@/lib/i18n/format";
 
 export function CarouselDots({
-  pages, active, onSelect,
-}: { pages: number; active: number; onSelect: (index: number) => void }) {
+  pages, active, onSelect, pageLabel,
+}: { pageLabel: string; pages: number; active: number; onSelect: (index: number) => void }) {
   if (pages < 2) return null;
   return (
     <div className={s.dots}>
@@ -12,7 +13,7 @@ export function CarouselDots({
           type="button"
           className={s.dot}
           onClick={() => onSelect(i)}
-          aria-label={`${i + 1}-sahifa`}
+          aria-label={fill(pageLabel, { n: i + 1 })}
           aria-current={i === active ? "true" : undefined}
         >
           <span />

@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
   // public/ dagi statik fayllar standart holatda max-age=0 bilan beriladi — har tashrifda qayta tekshiriladi.
   // 30 kun keshlaymiz. Faylni almashtirganda NOMINI o'zgartiring (masalan google-play-black.png kabi),
   // aks holda eski nusxa keshda qoladi.
+  // Standart til (uz) prefikssiz: "/" → statik /uz sahifasi. Proxy (middleware) shart emas —
+  // har bir til build vaqtida tayyor HTML, so'rov paytida kod ishlamaydi
+  async rewrites() {
+    return [{ source: "/", destination: "/uz" }];
+  },
+  async redirects() {
+    return [{ source: "/uz", destination: "/", permanent: true }];
+  },
   async headers() {
     const cache = [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }];
     return [

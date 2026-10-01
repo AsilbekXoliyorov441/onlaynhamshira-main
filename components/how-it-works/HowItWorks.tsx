@@ -6,7 +6,9 @@ import { LINKS } from "@/lib/data";
 import s from "./HowItWorks.module.css";
 import { SpriteDefs, Tick } from "./icons";
 import { PhoneFrame } from "./PhoneFrame";
-import { STEPS } from "./steps";
+import { STEP_DURS } from "./steps";
+import type { Dict } from "@/lib/i18n/dictionaries/uz";
+import type { Money } from "@/lib/i18n/format";
 import { useTapDot } from "./useTapDot";
 import { PlayStoreScreen } from "./screens/PlayStoreScreen";
 import { RegisterScreen } from "./screens/RegisterScreen";
@@ -19,7 +21,7 @@ const SCREENS = [PlayStoreScreen, RegisterScreen, ServicesScreen, SearchScreen].
 
 type Nav = { active: number; prev: number | null; runId: number };
 
-export default function HowItWorks() {
+export default function HowItWorks({ t, money }: { t: Dict["how"]; money: Money }) {
   // runId 0 — namunadagi boshlang'ich HTML holati (1-qadam faol, sahna hali boshlanmagan)
   const [nav, setNav] = useState<Nav>({ active: 0, prev: null, runId: 0 });
   // Endi faqat prefers-reduced-motion uchun (pauza tugmasi olib tashlangan)
@@ -89,14 +91,14 @@ export default function HowItWorks() {
     <section id="about" ref={rootRef} className={paused ? `${s.how} ${s.paused}` : s.how} aria-labelledby="how-title">
       <SpriteDefs />
       <div className={s.head}>
-        <span className={s.pill}>Yo‘riqnoma</span>
-        <h2 id="how-title">Uyda tibbiy yordamni qanday olish mumkin?</h2>
-        <p className={s.sub}>Atigi 4 qadam – va hamshira uyingizda bo‘ladi!</p>
+        <span className={s.pill}>{t.pill}</span>
+        <h2 id="how-title">{t.title}</h2>
+        <p className={s.sub}>{t.sub}</p>
       </div>
 
       <div className={s.stage}>
-        <ol className={s.steps} role="tablist" aria-label="Qadamlar">
-          {STEPS.map((st, i) => {
+        <ol className={s.steps} role="tablist" aria-label={t.stepsLabel}>
+          {t.steps.map((st, i) => {
             const on = i === active;
             return (
               <li key={st.title} role="presentation">
@@ -104,7 +106,7 @@ export default function HowItWorks() {
                   ref={(el) => { stepRefs.current[i] = el; }}
                   className={[s.step, on && s.active, i < active && s.past].filter(Boolean).join(" ")}
                   data-i={i}
-                  style={{ "--dur": st.dur } as React.CSSProperties}
+                  style={{ "--dur": STEP_DURS[i] } as React.CSSProperties}
                   role="tab"
                   aria-selected={on}
                   aria-controls={`s${i}`}
@@ -113,7 +115,8 @@ export default function HowItWorks() {
                   onKeyDown={onKey}
                 >
                   <span className={s.num}><span>{i + 1}</span><Tick className={s.done} width={18} height={18} /></span>
-                  <h3>{st.title}</h3>
+                  {/* Mobilda qisqa yorliq ko'rinadi; to'liq nom ekran o'quvchi uchun saqlanadi */}
+                  <h3><span className={s.full}>{st.title}</span><span className={s.tab} aria-hidden>{st.tab}</span></h3>
                   <span className={s.desc}><div><p>{st.desc}</p></div></span>
                   <span className={s.bar}>
                     {/* key={runId} — har go() da animatsiya boshidan (namunadagi reflow o'rniga) */}
@@ -144,17 +147,20 @@ export default function HowItWorks() {
                   runKey={seen && i === active ? runId : null}
                   reduced={reduced}
                   tap={tap}
+                  t={t.screens}
+                  panel={t.steps[i].panel}
+                  money={money}
                 />
               ))}
             </PhoneFrame>
           </div>
         </div>
-        <p className={s.mdesc} aria-live="polite">{runId ? STEPS[active].desc : ""}</p>
+        <p className={s.mdesc} aria-live="polite">{runId ? t.steps[active].desc : ""}</p>
       </div>
 
       <div className={s.cta}>
-        <Link href={LINKS.webApp}>Hozir buyurtma berish</Link>
-        <span>Ilovasiz ham ishlaydi, brauzerda.</span>
+        <Link href={LINKS.webApp}>{t.cta}</Link>
+        <span>{t.ctaNote}</span>
       </div>
     </section>
   );

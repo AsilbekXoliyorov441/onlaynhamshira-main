@@ -5,7 +5,7 @@ import { useSceneState, useSceneTimeline } from "../useSceneTimeline";
 import { screenCls, type ScreenProps } from "./types";
 
 type St = { title: string; sub: string; sec: number; line: boolean; pg2: boolean };
-const INITIAL: St = { title: "Mutaxassis qidirilmoqda", sub: "Qidiruv boshlanmoqda...", sec: 0, line: false, pg2: false };
+
 
 function MapSvg() {
   return (
@@ -55,20 +55,21 @@ function Illustration() {
 }
 
 export function SearchScreen(p: ScreenProps) {
-  const [v, set] = useSceneState(p.runKey, INITIAL);
+  const t = p.t.search;
+  const [v, set] = useSceneState<St>(p.runKey, { title: t.searching, sub: t.starting, sec: 0, line: false, pg2: false });
 
   useSceneTimeline(p.runKey, p.reduced, ({ at, every }) => {
     const id = every(1000, () => set((x) => ({ ...x, sec: x.sec + 1 })));
-    at(1800, () => set((x) => ({ ...x, sub: "Yaqin atrofdagi mutaxassislar qidirilmoqda..." })));
+    at(1800, () => set((x) => ({ ...x, sub: t.nearby })));
     at(4300, () => {
       clearInterval(id);
       set((x) => ({ ...x, line: true }));
     });
-    at(5200, () => set((x) => ({ ...x, pg2: true, title: "Mutaxassis topildi", sub: "Buyurtmangiz qabul qilindi" })));
+    at(5200, () => set((x) => ({ ...x, pg2: true, title: t.found, sub: t.accepted })));
   });
 
   return (
-    <div className={screenCls(p, s.s3)} id="s3" role="tabpanel" aria-label="Buyurtma berish">
+    <div className={screenCls(p, s.s3)} id="s3" role="tabpanel" aria-label={p.panel}>
       <div className={s.map}><MapSvg /></div>
       <div className={s.sb}><span>02:36</span><span className={s.ic}><span className={s.bat} /></span></div>
       <div className={s.xbtn}>
@@ -93,11 +94,11 @@ export function SearchScreen(p: ScreenProps) {
         <div className={s.acts}>
           <div>
             <span><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" stroke="#E53935" strokeWidth="2.6" strokeLinecap="round" /></svg></span>
-            Bekor qilish
+            {t.cancel}
           </div>
           <div>
             <span><svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1E2328" strokeWidth="2.4" strokeLinecap="round" /></svg></span>
-            Batafsil
+            {t.details}
           </div>
         </div>
       </div>

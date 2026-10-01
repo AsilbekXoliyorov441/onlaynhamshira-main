@@ -3,35 +3,36 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight, ChevronLeft, ChevronRight, MessageCircle, Phone, Plus } from "lucide-react";
-import { FAQ, LINKS, REVIEWS, SPECIALISTS } from "@/lib/data";
+import { LINKS, REVIEW_IMAGES, SPECIALISTS, type SpecialistGroup } from "@/lib/data";
+import { fill } from "@/lib/i18n/format";
+import type { Dict } from "@/lib/i18n/dictionaries/uz";
 import { SectionHead } from "./Sections";
 import { TelegramIcon } from "./StoreIcons";
 import { Icon } from "./Icon";
 
 /* ───────── Mutaxassislar ───────── */
-const GROUPS = ["Barchasi", "Hamshiralar", "Bolalar", "Shifokorlar"] as const;
+const GROUPS = ["all", "nurses", "kids", "doctors"] as const;
+type Group = "all" | SpecialistGroup;
 
-export function Specialists() {
-  const [group, setGroup] = useState<(typeof GROUPS)[number]>("Barchasi");
+export function Specialists({ t }: { t: Dict["specialists"] }) {
+  const [group, setGroup] = useState<Group>("all");
   // Mobilda dastlab 6 ta karta, qolgani "Yana ..." tugmasi bilan
   const MOBILE_LIMIT = 6;
   const [more, setMore] = useState(false);
   const tones = ["bg-sky", "bg-peach", "bg-lilac", "bg-mint"];
-  const list = useMemo(
-    () => (group === "Barchasi" ? SPECIALISTS : SPECIALISTS.filter((s) => s.group === group)),
-    [group],
-  );
+  const all = useMemo(() => SPECIALISTS.map((s, i) => ({ ...s, ...t.items[i] })), [t]);
+  const list = useMemo(() => (group === "all" ? all : all.filter((s) => s.group === group)), [all, group]);
 
   return (
     <section id="specialists" aria-labelledby="spec-h" className="bg-mist py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
         <SectionHead
           id="spec-h"
-          label="Ommabop xizmatlar"
-          title="Barcha zarur mutaxassislar yagona ilovada"
-          text="Bizning platformamizda turli xil tibbiy yordam ko‘rsatish uchun malakali mutaxassislar ishlaydi."
+          label={t.label}
+          title={t.title}
+          text={t.text}
         />
-        <div role="tablist" aria-label="Mutaxassis turi" data-reveal className="no-scrollbar -mx-4 mt-8 flex justify-start gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mt-10 sm:justify-center sm:px-0">
+        <div role="tablist" aria-label={t.tabsLabel} data-reveal className="no-scrollbar -mx-4 mt-8 flex justify-start gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mt-10 sm:justify-center sm:px-0">
           {GROUPS.map((g) => (
             <button
               key={g}
@@ -42,9 +43,9 @@ export function Specialists() {
                 g === group ? "bg-brand-grad text-white shadow-lg" : "bg-white hover:-translate-y-0.5 hover:bg-white/60"
               }`}
             >
-              {g}
+              {t.groups[g]}
               <span className={`ml-2 rounded-full px-2 py-0.5 text-xs tabular-nums ${g === group ? "bg-white/15" : "bg-mist"}`}>
-                {g === "Barchasi" ? SPECIALISTS.length : SPECIALISTS.filter((x) => x.group === g).length}
+                {g === "all" ? SPECIALISTS.length : SPECIALISTS.filter((x) => x.group === g).length}
               </span>
             </button>
           ))}
@@ -75,7 +76,7 @@ export function Specialists() {
             onClick={() => setMore(true)}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-white py-3.5 font-semibold transition active:scale-[0.99] sm:hidden"
           >
-            Yana {list.length - MOBILE_LIMIT} ta mutaxassis <Plus className="size-4" aria-hidden />
+            {fill(t.more, { n: list.length - MOBILE_LIMIT })} <Plus className="size-4" aria-hidden />
           </button>
         )}
       </div>
@@ -84,17 +85,19 @@ export function Specialists() {
 }
 
 /* ───────── Fikrlar ───────── */
-const N = REVIEWS.length;
+const N = REVIEW_IMAGES.length;
 const COPIES = 3; // [nusxa][asl][nusxa] — o'rtadagi to'plamda turamiz, chetga yetganda sezdirmay qaytamiz
 const AUTOPLAY_MS = 4500;
 
 const REVIEW_TONES = ["bg-sky", "bg-peach", "bg-lilac", "bg-mint"];
 
-function ReviewCard({ r, i, hidden, className = "" }: { r: (typeof REVIEWS)[number]; i: number; hidden?: boolean; className?: string }) {
+type Review = Dict["reviews"]["items"][number] & { img: string };
+
+function ReviewCard({ r, i, stars, hidden, className = "" }: { r: Review; i: number; stars: string; hidden?: boolean; className?: string }) {
   return (
     <li aria-hidden={hidden || undefined} className={`${REVIEW_TONES[i % 4]} lift relative flex flex-col rounded-[28px] p-7 ${className}`}>
       <span aria-hidden className="absolute top-3 right-6 font-serif text-[88px] leading-none text-ink/10">”</span>
-      <div className="flex gap-0.5" role="img" aria-label="5 yulduz">
+      <div className="flex gap-0.5" role="img" aria-label={stars}>
         {Array.from({ length: 5 }).map((_, k) => (
           <Icon key={k} name="star" size={20} />
         ))}
@@ -111,35 +114,30 @@ function ReviewCard({ r, i, hidden, className = "" }: { r: (typeof REVIEWS)[numb
   );
 }
 
-const REVIEWS_HEAD = (
-  <SectionHead
-    id="rev-h"
-    wide
-    label="Mijozlar fikrlari"
-    title="Minglab mamnun mijozlar allaqachon Onlayn Hamshirani tanlab bo‘lishdi!"
-    text="Navbatsiz va kutishsiz professional tibbiy xizmat - minglab foydalanuvchilar bizga ishonch bildirmoqda."
-  />
-);
+const ReviewsHead = ({ t }: { t: Dict["reviews"] }) => <SectionHead id="rev-h" wide label={t.label} title={t.title} text={t.text} />;
 // Shundan ko'p fikr bo'lsa cheksiz karusel, aks holda oddiy to'r
 const REVIEWS_CAROUSEL_FROM = 4;
 
-export function Reviews() {
-  if (REVIEWS.length < REVIEWS_CAROUSEL_FROM) {
+type ReviewsProps = { t: Dict["reviews"]; stars: string };
+
+export function Reviews({ t, stars }: ReviewsProps) {
+  const reviews = useMemo(() => t.items.map((r, i) => ({ ...r, img: REVIEW_IMAGES[i] })), [t]);
+  if (reviews.length < REVIEWS_CAROUSEL_FROM) {
     return (
       <section id="reviews" aria-labelledby="rev-h" className="py-16 sm:py-24 lg:py-32">
         <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
-          {REVIEWS_HEAD}
+          <ReviewsHead t={t} />
           <ul className="mt-10 grid justify-center gap-3 sm:mt-12 md:grid-cols-[repeat(auto-fit,minmax(0,420px))]">
-            {REVIEWS.map((r, i) => <ReviewCard key={r.name} r={r} i={i} />)}
+            {reviews.map((r, i) => <ReviewCard key={r.name} r={r} i={i} stars={stars} />)}
           </ul>
         </div>
       </section>
     );
   }
-  return <ReviewsCarousel />;
+  return <ReviewsCarousel t={t} stars={stars} reviews={reviews} />;
 }
 
-function ReviewsCarousel() {
+function ReviewsCarousel({ t, stars, reviews }: ReviewsProps & { reviews: Review[] }) {
   const track = useRef<HTMLUListElement>(null);
   const [index, setIndex] = useState(0); // 0..N-1 (nuqtalar uchun)
   // Avtoaylanish faol nuqtadagi progress animatsiyasiga bog'langan: u tugaganda keyingi karta.
@@ -258,13 +256,13 @@ function ReviewsCarousel() {
   };
 
   const items = full
-    ? Array.from({ length: COPIES }, (_, c) => REVIEWS.map((r, i) => ({ r, i, c }))).flat()
-    : REVIEWS.map((r, i) => ({ r, i, c: 1 }));
+    ? Array.from({ length: COPIES }, (_, c) => reviews.map((r, i) => ({ r, i, c }))).flat()
+    : reviews.map((r, i) => ({ r, i, c: 1 }));
   const arrowCls = "grid size-10 shrink-0 place-items-center rounded-full transition active:scale-95 sm:size-11";
 
   return (
     <section id="reviews" aria-labelledby="rev-h" className="py-16 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6">{REVIEWS_HEAD}</div>
+      <div className="mx-auto max-w-[1320px] px-4 sm:px-6"><ReviewsHead t={t} /></div>
       <ul
         ref={track}
         {...hoverProps}
@@ -281,28 +279,28 @@ function ReviewsCarousel() {
           e.preventDefault();
           scroll(e.key === "ArrowRight" ? 1 : -1);
         }}
-        aria-roledescription="karusel"
-        aria-label="Mijozlar fikrlari"
+        aria-roledescription={t.carousel}
+        aria-label={t.carouselLabel}
         className="no-scrollbar mt-10 flex cursor-grab snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 py-2 outline-none select-none focus-visible:ring-3 focus-visible:ring-brand-teal/60 active:cursor-grabbing sm:mt-12 sm:scroll-px-[max(24px,calc((100vw-1320px)/2+24px))] sm:px-[max(24px,calc((100vw-1320px)/2+24px))]"
       >
         {items.map(({ r, i, c }) => (
           // Nusxalar ekran o'quvchidan yashirin — fikrlar bir marta o'qiladi
-          <ReviewCard key={`${c}-${r.name}`} r={r} i={i} hidden={c !== 1} className="w-[86vw] max-w-[420px] shrink-0 snap-start" />
+          <ReviewCard key={`${c}-${r.name}`} r={r} i={i} stars={stars} hidden={c !== 1} className="w-[86vw] max-w-[420px] shrink-0 snap-start" />
         ))}
       </ul>
 
       {/* Kartalar ostida: bitta pill ichida ← nuqtalar → */}
       <div className="mt-6 flex justify-center px-4 sm:mt-8">
         <div {...hoverProps} className="flex items-center gap-1 rounded-full bg-white p-1.5 shadow-[0_14px_34px_-18px_rgb(16_41_58/0.45)] ring-1 ring-line sm:gap-2">
-          <button onClick={() => scroll(-1)} aria-label="Oldingi fikr" className={`${arrowCls} bg-mist text-ink hover:bg-line`}>
+          <button onClick={() => scroll(-1)} aria-label={t.prev} className={`${arrowCls} bg-mist text-ink hover:bg-line`}>
             <ChevronLeft className="size-5" />
           </button>
 
-          <div className="flex items-center px-1" role="group" aria-label="Fikrlar sahifalari">
-            {REVIEWS.map((r, i) => {
+          <div className="flex items-center px-1" role="group" aria-label={t.pagesLabel}>
+            {reviews.map((r, i) => {
               const on = i === index;
               return (
-                <button key={r.name} onClick={() => goTo(i)} aria-label={`${i + 1}-fikr`} aria-current={on} className="group grid h-10 min-w-6 place-items-center">
+                <button key={r.name} onClick={() => goTo(i)} aria-label={fill(t.page, { n: i + 1 })} aria-current={on} className="group grid h-10 min-w-6 place-items-center">
                   <span className={`relative block h-2 overflow-hidden rounded-full transition-all duration-300 ${on ? "w-8 bg-line sm:w-10" : "w-2 bg-line group-hover:bg-ink/30"}`}>
                     {on && (
                       // key: karta almashganda progress noldan boshlanadi; tugaganda — keyingi karta
@@ -322,7 +320,7 @@ function ReviewsCarousel() {
             })}
           </div>
 
-          <button onClick={() => scroll(1)} aria-label="Keyingi fikr" className={`${arrowCls} bg-brand-grad text-white shadow-[0_10px_22px_-12px_rgb(56_197_177/0.9)] hover:brightness-105`}>
+          <button onClick={() => scroll(1)} aria-label={t.next} className={`${arrowCls} bg-brand-grad text-white shadow-[0_10px_22px_-12px_rgb(56_197_177/0.9)] hover:brightness-105`}>
             <ChevronRight className="size-5" />
           </button>
         </div>
@@ -332,7 +330,7 @@ function ReviewsCarousel() {
 }
 
 /* ───────── FAQ ───────── */
-export function Faq() {
+export function Faq({ t }: { t: Dict["faq"] }) {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section id="faq" aria-labelledby="faq-h" className="bg-mist py-16 sm:py-24 lg:py-32">
@@ -341,26 +339,26 @@ export function Faq() {
           <SectionHead
             id="faq-h"
             align="left"
-            label="Ko‘p beriladigan savollar"
-            title="Savollaringizga javoblar"
-            text="Xizmatni tushunishingiz oson bo‘lishi uchun eng ommabop savollarni to‘pladik."
+            label={t.label}
+            title={t.title}
+            text={t.text}
           />
           <div data-reveal className="relative mt-6 overflow-hidden rounded-[24px] bg-white p-5 sm:mt-8 sm:p-6">
             <div aria-hidden className="absolute top-4 right-4 animate-float"><Icon name="chat" size={52} tone="tile" /></div>
-            <p className="pr-16 font-semibold">Javob topmadingizmi?</p>
-            <p className="mt-1 pr-16 text-ink-soft">Operatorlar 24/7 yordam beradi.</p>
+            <p className="pr-16 font-semibold">{t.noAnswer}</p>
+            <p className="mt-1 pr-16 text-ink-soft">{t.operators}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <a href={LINKS.telegram} className="inline-flex items-center gap-2 rounded-full bg-brand-grad px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-105">
                 <TelegramIcon className="size-4" /> Telegram
               </a>
               <a href={`tel:${LINKS.phone}`} className="inline-flex items-center gap-2 rounded-full border border-line px-5 py-3 text-[15px] font-semibold">
-                <Phone className="size-4" /> Qo‘ng‘iroq
+                <Phone className="size-4" /> {t.call}
               </a>
             </div>
           </div>
         </div>
         <ul className="space-y-2">
-          {FAQ.map((f, i) => {
+          {t.items.map((f, i) => {
             const on = open === i;
             return (
               // data-reveal o'zgarmas className'li <li>da: holat klasslari ichki div'da,
@@ -402,7 +400,7 @@ export function Faq() {
 }
 
 /* ───────── Mobil pastki CTA ───────── */
-export function MobileCTA() {
+export function MobileCTA({ t, cta }: { t: Dict["mobileCta"]; cta: string }) {
   // Hero'dagi tugmalarni yopmasligi uchun biroz pastga tushilgach paydo bo'ladi
   const [show, setShow] = useState(false);
   useEffect(() => {
@@ -418,14 +416,14 @@ export function MobileCTA() {
       }`}
     >
       <div className="flex gap-2 rounded-[22px] bg-white/90 p-2 shadow-[0_12px_40px_-12px_rgb(16_41_58/0.4)] ring-1 ring-line backdrop-blur-xl">
-        <a href={`tel:${LINKS.phone}`} aria-label="Qo‘ng‘iroq qilish" className="grid size-14 shrink-0 place-items-center rounded-2xl bg-mist">
+        <a href={`tel:${LINKS.phone}`} aria-label={t.call} className="grid size-14 shrink-0 place-items-center rounded-2xl bg-mist">
           <Phone className="size-5" />
         </a>
-        <a href={LINKS.telegram} aria-label="Telegramda yozish" className="grid size-14 shrink-0 place-items-center rounded-2xl bg-mist">
+        <a href={LINKS.telegram} aria-label={t.telegram} className="grid size-14 shrink-0 place-items-center rounded-2xl bg-mist">
           <MessageCircle className="size-5" />
         </a>
         <a href={LINKS.webApp} className="flex min-w-0 flex-1 items-center justify-center rounded-2xl bg-brand-grad px-2 text-center text-[clamp(15px,4.8vw,17px)] leading-tight font-bold text-white">
-          Hamshira chaqirish
+          {cta}
         </a>
       </div>
     </div>

@@ -3,13 +3,17 @@
 import { useEffect, useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import { LINKS, NAV } from "@/lib/data";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dict } from "@/lib/i18n/dictionaries/uz";
+import { LangSwitch } from "./LangSwitch";
 import { Logo, InstagramIcon, TelegramIcon, YoutubeIcon } from "./StoreIcons";
 import { StoreButtons } from "./DownloadModal";
 import { setScrollLock, useActiveSection } from "./Motion";
 
-const SECTION_IDS = NAV.map((n) => n.href.slice(1));
+const SECTION_IDS = NAV.map((h) => h.slice(1));
 
-export default function Header() {
+export default function Header({ lang, t, common }: { lang: Locale; t: Dict["header"]; common: Dict["common"] }) {
+  const nav = NAV.map((href, i) => ({ href, label: t.nav[i] }));
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const active = useActiveSection(SECTION_IDS);
@@ -37,13 +41,13 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto flex h-[72px] max-w-[1320px] items-center gap-6 px-4 sm:px-6">
-          <a href="#top" aria-label="Onlayn Hamshira — bosh sahifa" className="shrink-0">
+          <a href="#top" aria-label={t.homeLabel} className="shrink-0">
             <Logo className="h-9 sm:h-10" />
           </a>
 
-          <nav aria-label="Asosiy" className="ml-4 hidden lg:block">
+          <nav aria-label={t.mainNav} className="ml-4 hidden lg:block">
             <ul className="flex items-center gap-1">
-              {NAV.map((n) => {
+              {nav.map((n) => {
                 const on = active === n.href.slice(1);
                 return (
                   <li key={n.href}>
@@ -62,7 +66,8 @@ export default function Header() {
             </ul>
           </nav>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+            <LangSwitch lang={lang} label={common.languages} />
             <a
               href={`tel:${LINKS.phone}`}
               className="hidden items-center gap-2 rounded-full px-4 py-2.5 text-[15px] font-semibold transition hover:bg-mist md:inline-flex"
@@ -73,11 +78,11 @@ export default function Header() {
               href={LINKS.webApp}
               className="hidden rounded-full bg-brand-grad text-white px-5 py-2.5 text-[15px] font-semibold shadow-[0_8px_20px_-10px_rgb(56_197_177/0.9)] transition hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 sm:inline-flex"
             >
-              Hamshira chaqirish
+              {common.callNurse}
             </a>
             <button
               onClick={() => setMenu(true)}
-              aria-label="Menyuni ochish"
+              aria-label={t.openMenu}
               aria-expanded={menu}
               className="grid size-11 place-items-center rounded-full border border-line bg-white transition hover:border-brand lg:hidden"
             >
@@ -111,13 +116,13 @@ export default function Header() {
         >
           <div className="flex items-center justify-between">
             <Logo className="h-9" />
-            <button onClick={() => setMenu(false)} aria-label="Menyuni yopish" className="grid size-11 place-items-center rounded-full bg-mist">
+            <button onClick={() => setMenu(false)} aria-label={t.closeMenu} className="grid size-11 place-items-center rounded-full bg-mist">
               <X className="size-5" />
             </button>
           </div>
-          <nav className="mt-8" aria-label="Mobil">
+          <nav className="mt-8" aria-label={t.mobileNav}>
             <ul className="space-y-1">
-              {[...NAV, { label: "Blog", href: LINKS.blog }, { label: "Hamkor va mutaxassis bo‘ling", href: LINKS.expert }].map((n) => (
+              {[...nav, { label: t.blog, href: LINKS.blog }, { label: t.partner, href: LINKS.expert }].map((n) => (
                 <li key={n.href}>
                   <a
                     href={n.href}
@@ -133,7 +138,7 @@ export default function Header() {
           </nav>
           <div className="mt-auto space-y-3">
             <a href={LINKS.webApp} tabIndex={menu ? 0 : -1} className="flex justify-center rounded-2xl bg-brand-grad text-white py-4 font-semibold">
-              Hamshirani onlayn chaqirish
+              {common.callNurseOnline}
             </a>
             <a href={`tel:${LINKS.phone}`} tabIndex={menu ? 0 : -1} className="flex items-center justify-center gap-2 rounded-2xl border border-line py-4 font-semibold">
               <Phone className="size-4" /> {LINKS.phoneLabel}

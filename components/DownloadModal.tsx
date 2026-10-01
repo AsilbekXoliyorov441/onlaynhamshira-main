@@ -6,12 +6,16 @@ import { Globe, X } from "lucide-react";
 import { IMAGES, LINKS } from "@/lib/data";
 import { AppleIcon, PlayIcon } from "./StoreIcons";
 import { setScrollLock } from "./Motion";
+import { fill } from "@/lib/i18n/format";
+import type { Dict } from "@/lib/i18n/dictionaries/uz";
+
+type T = Dict["download"] & { close: string; onlineApp: string };
 
 type Platform = "ios" | "android" | "desktop";
 type Store = "android" | "ios";
-type Ctx = { open: (store?: Store) => void; platform: Platform };
+type Ctx = { open: (store?: Store) => void; platform: Platform; t: Pick<T, "googlePlay" | "appStore"> };
 
-const DownloadCtx = createContext<Ctx>({ open: () => {}, platform: "desktop" });
+const DownloadCtx = createContext<Ctx>({ open: () => {}, platform: "desktop", t: { googlePlay: "Google Play", appStore: "App Store" } });
 export const useDownload = () => useContext(DownloadCtx);
 
 function detect(): Platform {
@@ -24,7 +28,7 @@ function detect(): Platform {
   return "desktop";
 }
 
-export function DownloadProvider({ children }: { children: React.ReactNode }) {
+export function DownloadProvider({ t, children }: { t: T; children: React.ReactNode }) {
   const [isOpen, setOpen] = useState(false);
   const [platform, setPlatform] = useState<Platform>("desktop");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -61,7 +65,7 @@ export function DownloadProvider({ children }: { children: React.ReactNode }) {
   }, [isOpen, close]);
 
   return (
-    <DownloadCtx.Provider value={{ open, platform }}>
+    <DownloadCtx.Provider value={{ open, platform, t }}>
       {children}
       {isOpen && (
         <div
@@ -80,13 +84,13 @@ export function DownloadProvider({ children }: { children: React.ReactNode }) {
             <button
               ref={closeRef}
               onClick={close}
-              aria-label="Yopish"
+              aria-label={t.close}
               className="absolute top-4 right-4 grid size-10 place-items-center rounded-full bg-white/70 text-ink transition hover:bg-white"
             >
               <X className="size-5" />
             </button>
             <h2 id="dl-title" className="relative text-center text-2xl font-semibold text-balance sm:text-[28px]">
-              Ilovani o‘rnatish uchun QR kodni skanerlang
+              {t.title}
             </h2>
             <div className="relative mt-7 grid grid-cols-2 gap-4">
               {[
@@ -95,7 +99,7 @@ export function DownloadProvider({ children }: { children: React.ReactNode }) {
               ].map(({ src, label, Icon, href }) => (
                 <a key={label} href={href} target="_blank" rel="noopener" className="rounded-2xl bg-white p-3 transition hover:-translate-y-0.5 hover:shadow-lg">
                   {/* 1-bitli PNG (~5KB) — qayta kodlash faqat buzadi */}
-                  <Image src={src} alt={`${label} uchun QR kod`} width={240} height={240} unoptimized className="aspect-square w-full" />
+                  <Image src={src} alt={fill(t.qrFor, { p: label })} width={240} height={240} unoptimized className="aspect-square w-full" />
                   <span className="mt-2 flex items-center justify-center gap-1.5 text-sm font-medium">
                     <Icon className="size-4" /> {label}
                   </span>
@@ -106,10 +110,10 @@ export function DownloadProvider({ children }: { children: React.ReactNode }) {
               href={LINKS.webApp}
               className="relative mt-6 flex items-center justify-center gap-3 rounded-full border-2 border-ink/80 bg-white/40 px-6 py-3.5 font-semibold transition hover:bg-white"
             >
-              <Globe className="size-5" /> Onlayn ilova
+              <Globe className="size-5" /> {t.onlineApp}
             </a>
             <p className="relative mt-3 text-center text-ink-soft">
-              Hamshirani onlayn chaqiring - dastur yuklamasdan va o‘rnatmasdan!
+              {t.note}
             </p>
           </div>
         </div>
@@ -120,10 +124,10 @@ export function DownloadProvider({ children }: { children: React.ReactNode }) {
 
 /** Platformaga mos rasmiy do'kon badge'lari */
 export function StoreButtons({ className = "" }: { className?: string }) {
-  const { open, platform } = useDownload();
+  const { open, platform, t } = useDownload();
   const buttons = [
-    { key: "android", src: "/badges/google-play-black.png", w: 600, h: 178, label: "Google Play'dan yuklab olish" },
-    { key: "ios", src: "/badges/app-store.png", w: 600, h: 209, label: "App Store'dan yuklab olish" },
+    { key: "android", src: "/badges/google-play-black.png", w: 600, h: 178, label: t.googlePlay },
+    { key: "ios", src: "/badges/app-store.png", w: 600, h: 209, label: t.appStore },
   ];
   // Foydalanuvchi qurilmasiga mos tugma birinchi turadi
   if (platform === "ios") buttons.reverse();

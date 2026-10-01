@@ -12,7 +12,9 @@ export type NewsPost = {
   category?: string;
 };
 
-export function NewsCard({ post }: { post: NewsPost }) {
+export type NewsCardT = { more: string; readMore: string };
+
+export function NewsCard({ post, t }: { post: NewsPost; t: NewsCardT }) {
   return (
     <Link href={post.href} className={s.card} draggable={false}>
       <div className={s.media}>
@@ -30,7 +32,7 @@ export function NewsCard({ post }: { post: NewsPost }) {
         {/* Faqat mobil: hover yo'q — ma'lumot karta ichida */}
         <p className={s.excerpt}>{post.excerpt}</p>
         <span className={s.more} aria-hidden>
-          Batafsil <ArrowRight size={14} />
+          {t.more} <ArrowRight size={14} />
         </span>
       </div>
 
@@ -40,7 +42,7 @@ export function NewsCard({ post }: { post: NewsPost }) {
         <p className={s.ovTitle}>{post.title}</p>
         <p className={s.ovExcerpt}>{post.excerpt}</p>
         <span className={s.ovMore}>
-          Batafsil o‘qish <ArrowRight />
+          {t.readMore} <ArrowRight />
         </span>
       </div>
     </Link>

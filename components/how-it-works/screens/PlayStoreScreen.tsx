@@ -5,11 +5,13 @@ import s from "../HowItWorks.module.css";
 import { Logo } from "../icons";
 import { useSceneState, useSceneTimeline } from "../useSceneTimeline";
 import { screenCls, type ScreenProps } from "./types";
+import { fill } from "@/lib/i18n/format";
 
 type St = { st: "idle" | "loading" | "done"; pct: number };
 const INITIAL: St = { st: "idle", pct: 0 };
 
 export function PlayStoreScreen(p: ScreenProps) {
+  const t = p.t.ps;
   const [v, set] = useSceneState(p.runKey, INITIAL);
   const install = useRef<HTMLButtonElement>(null);
   const open = useRef<HTMLButtonElement>(null);
@@ -38,7 +40,7 @@ export function PlayStoreScreen(p: ScreenProps) {
         : { transition: "stroke-dashoffset 2.4s cubic-bezier(.4,0,.2,1)", strokeDashoffset: 0 };
 
   return (
-    <div className={screenCls(p, s.s0)} id="s0" data-st={v.st} role="tabpanel" aria-label="Ilovani yuklab olish">
+    <div className={screenCls(p, s.s0)} id="s0" data-st={v.st} role="tabpanel" aria-label={p.panel}>
       <div className={s.sb}><span>02:33</span><span className={s.ic}><span className={s.bat} /></span></div>
       <div className={s["ps-top"]}>
         <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round"><path d="M20 12H4m6-6-6 6 6 6" /></svg>
@@ -52,27 +54,27 @@ export function PlayStoreScreen(p: ScreenProps) {
         <div>
           <div className={s["ps-name"]}>Onlayn Hamshira</div>
           <div className={s["ps-dev"]}>ONLAYN HAMSHIRA LLC</div>
-          <div className={s["ps-pct"]}>{v.pct}% of 24 MB</div>
+          <div className={s["ps-pct"]}>{fill(t.pct, { n: v.pct })}</div>
         </div>
       </div>
       <div className={s["ps-stats"]}>
-        <div><b>4.3 ★</b>62 reviews</div>
-        <div><b>3+</b>Rated for 3+</div>
-        <div><b>10K+</b>Downloads</div>
+        <div><b>4.3 ★</b>{t.reviews}</div>
+        <div><b>3+</b>{t.rated}</div>
+        <div><b>10K+</b>{t.downloads}</div>
       </div>
       <div className={s["ps-btns"]}>
-        <button ref={install} className={`${s["b-install"]} ${s.fill}`} tabIndex={-1}>Install</button>
-        <button className={s["b-cancel"]} tabIndex={-1}>Cancel</button>
-        <button className={`${s["b-open-dis"]} ${s.dis}`} tabIndex={-1}>Open</button>
-        <button className={s["b-un"]} tabIndex={-1}>Uninstall</button>
-        <button ref={open} className={`${s["b-open"]} ${s.fill}`} tabIndex={-1}>Open</button>
+        <button ref={install} className={`${s["b-install"]} ${s.fill}`} tabIndex={-1}>{t.install}</button>
+        <button className={s["b-cancel"]} tabIndex={-1}>{t.cancel}</button>
+        <button className={`${s["b-open-dis"]} ${s.dis}`} tabIndex={-1}>{t.open}</button>
+        <button className={s["b-un"]} tabIndex={-1}>{t.uninstall}</button>
+        <button ref={open} className={`${s["b-open"]} ${s.fill}`} tabIndex={-1}>{t.open}</button>
       </div>
       <div className={s["ps-rate"]}>
-        <h4>Rate this app</h4>
-        <p>Tell others what you think</p>
+        <h4>{t.rate}</h4>
+        <p>{t.rateSub}</p>
         <div className={s["ps-stars"]}><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></div>
       </div>
-      <div className={s["ps-about"]}>Tibbiy yordam uyingizda – tez, qulay, xavfsiz!</div>
+      <div className={s["ps-about"]}>{t.about}</div>
     </div>
   );
 }

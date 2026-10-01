@@ -1,16 +1,18 @@
 import Image from "next/image";
 import { ArrowRight, BadgeCheck, Clock, Star, Wallet } from "lucide-react";
-import { IMAGES, LINKS, REVIEWS } from "@/lib/data";
+import { IMAGES, LINKS, REVIEW_IMAGES, SERVICES, type ServiceId } from "@/lib/data";
+import { formatNum } from "@/lib/i18n/format";
+import type { Dict } from "@/lib/i18n/dictionaries/uz";
 import { StoreButtons } from "./DownloadModal";
 import { HeroBooking } from "./HeroBooking";
 
-const PERKS = [
-  { Icon: BadgeCheck, text: "Tekshirilgan hamshiralar" },
-  { Icon: Clock, text: "30–90 daqiqada yetib keladi" },
-  { Icon: Wallet, text: "Xizmatdan so‘ng to‘lov" },
-];
+const PERK_ICONS = [BadgeCheck, Clock, Wallet];
+// Buyurtma kartasidagi tezkor tanlov — client komponentga faqat shu 5 tasining qisqa matni boradi
+const QUICK: ServiceId[] = ["ukol", "kapelnitsa", "yara", "bosim", "massaj"];
 
-export default function Hero() {
+export default function Hero({ t }: { t: Dict }) {
+  const h = t.hero;
+  const clients = `${formatNum(13500, t.common.money.sep)}+`;
   return (
     <section id="top" className="relative px-3 pt-[88px] sm:px-4">
       <div className="relative mx-auto grid max-w-[1400px] gap-3 lg:grid-cols-[1.05fr_1fr]">
@@ -30,25 +32,28 @@ export default function Hero() {
                 <span className="absolute size-2.5 animate-pulse-ring rounded-full bg-brand" />
                 <span className="size-2.5 rounded-full bg-brand-deep" />
               </span>
-              Hamshirani onlayn chaqirish
+              {t.common.callNurseOnline}
               <span className="grid size-6 place-items-center rounded-full bg-brand-grad text-white transition group-hover:translate-x-0.5">
                 <ArrowRight className="size-3.5" />
               </span>
             </a>
 
-            <h1 className="mt-7 max-w-[13ch] text-[40px] leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-[60px] xl:text-[70px]">
-              Tibbiy xizmatlar <span className="text-brand-grad">uyingizda</span> — tez, qulay, xavfsiz!
+            <h1 className="mt-7 max-w-[13ch] text-[clamp(32px,11vw,40px)] leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-[60px] xl:text-[70px]">
+              {h.titleBefore}<span className="text-brand-grad">{h.titleAccent}</span>{h.titleAfter}
             </h1>
             <p className="mt-5 max-w-[44ch] text-lg leading-relaxed text-ink-soft sm:text-[19px]">
-              Malakali hamshirani tanlang va navbatsiz hamda kutish vaqtisiz uyingizda professional tibbiy yordam oling.
+              {h.lead}
             </p>
 
             <ul className="mt-6 flex flex-wrap gap-2">
-              {PERKS.map(({ Icon: Glyph, text }) => (
+              {h.perks.map((text, i) => {
+                const Glyph = PERK_ICONS[i];
+                return (
                 <li key={text} className="inline-flex items-center gap-2 rounded-full bg-white/70 py-2 pr-3.5 pl-2.5 text-sm font-medium ring-1 ring-white backdrop-blur">
                   <Glyph className="size-4 text-brand-deep" aria-hidden /> {text}
                 </li>
-              ))}
+                );
+              })}
             </ul>
 
             <StoreButtons className="mt-7 sm:mt-8 sm:mb-8" />
@@ -57,26 +62,26 @@ export default function Hero() {
             <div className="mt-auto hidden flex-wrap items-center gap-x-6 gap-y-4 border-t border-ink/10 pt-6 sm:flex">
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-3">
-                  {REVIEWS.slice(0, 4).map((r) => (
-                    <Image key={r.name} src={r.img} alt="" width={44} height={44} className="size-10 rounded-full border-2 border-white object-cover transition hover:z-10 hover:-translate-y-1" />
+                  {REVIEW_IMAGES.slice(0, 4).map((src) => (
+                    <Image key={src} src={src} alt="" width={44} height={44} className="size-10 rounded-full border-2 border-white object-cover transition hover:z-10 hover:-translate-y-1" />
                   ))}
                 </div>
                 <p className="text-sm leading-snug">
-                  <span className="flex items-center gap-0.5 text-[#f5b301]" role="img" aria-label="5 yulduz">
+                  <span className="flex items-center gap-0.5 text-[#f5b301]" role="img" aria-label={t.common.fiveStars}>
                     {Array.from({ length: 5 }).map((_, k) => <Star key={k} className="size-3.5 fill-current" aria-hidden />)}
                   </span>
-                  <strong className="font-bold">13 500+</strong> <span className="text-ink-soft">mamnun mijoz</span>
+                  <strong className="font-bold">{clients}</strong> <span className="text-ink-soft">{h.happyClients}</span>
                 </p>
               </div>
               <span aria-hidden className="hidden h-9 w-px bg-ink/10 sm:block" />
               <p className="text-sm leading-snug">
                 <strong className="block text-xl font-bold tracking-tight">270+</strong>
-                <span className="text-ink-soft">malakali hamshira</span>
+                <span className="text-ink-soft">{h.qualifiedNurses}</span>
               </p>
               <span aria-hidden className="hidden h-9 w-px bg-ink/10 sm:block" />
               <p className="text-sm leading-snug">
                 <strong className="block text-xl font-bold tracking-tight">24/7</strong>
-                <span className="text-ink-soft">dam olishsiz</span>
+                <span className="text-ink-soft">{h.noDaysOff}</span>
               </p>
             </div>
           </div>
@@ -86,7 +91,7 @@ export default function Hero() {
         <div style={{ "--d": 1 } as React.CSSProperties} className="hero-in relative flex flex-col gap-3 overflow-hidden rounded-[32px] bg-mist p-3">
           <Image
             src={IMAGES.hero}
-            alt="Onlayn Hamshira hamshirasi bemor uyiga ketmoqda"
+            alt={h.imageAlt}
             fill
             loading="eager"
             fetchPriority="high"
@@ -99,26 +104,30 @@ export default function Hero() {
           {/* Tepada: ishonch ko'rsatkichlari */}
           <div className="relative flex flex-wrap items-stretch gap-3">
             <div className="flex min-w-[260px] flex-1 items-center gap-3.5 rounded-[20px] bg-white/90 py-3.5 pr-5 pl-3.5 shadow-lg backdrop-blur">
-              <div className="flex -space-x-3">
-                {REVIEWS.slice(0, 3).map((r) => (
-                  <Image key={r.name} src={r.img} alt="" width={44} height={44} className="size-11 rounded-full border-2 border-white object-cover" />
+              <div className="flex shrink-0 -space-x-3">
+                {REVIEW_IMAGES.slice(0, 3).map((src) => (
+                  <Image key={src} src={src} alt="" width={44} height={44} className="size-11 rounded-full border-2 border-white object-cover" />
                 ))}
               </div>
-              <p className="text-[15px] leading-tight">
-                <strong className="block text-xl font-bold tracking-tight">13 500+ mijoz</strong>
-                <span className="text-ink-soft">bizdan foydalanmoqda</span>
+              <p className="min-w-0 text-[15px] leading-tight">
+                <strong className="block text-lg font-bold tracking-tight sm:text-xl">{h.clients}</strong>
+                <span className="text-ink-soft">{h.clientsSub}</span>
               </p>
             </div>
             <div className="flex min-w-[260px] flex-1 items-center gap-3.5 rounded-[20px] bg-white/90 py-3.5 pr-5 pl-3.5 shadow-lg backdrop-blur">
               <span className="grid size-11 place-items-center rounded-2xl bg-brand-grad text-white"><Clock className="size-[22px]" aria-hidden /></span>
               <p className="text-[15px] leading-tight">
-                <strong className="block text-xl font-bold tracking-tight">24/7 ishlaymiz</strong>
-                <span className="text-ink-soft">dam olish kunlarisiz</span>
+                <strong className="block text-xl font-bold tracking-tight">{h.allDay}</strong>
+                <span className="text-ink-soft">{h.allDaySub}</span>
               </p>
             </div>
           </div>
 
-          <HeroBooking />
+          <HeroBooking
+            t={t.booking}
+            common={t.common}
+            items={SERVICES.filter((s) => QUICK.includes(s.id)).map((s) => ({ ...s, short: t.services.items[s.id].short, duration: t.services.items[s.id].duration }))}
+          />
         </div>
       </div>
     </section>

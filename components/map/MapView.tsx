@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { OFFICE } from "./office";
+import { fill } from "@/lib/i18n/format";
+import type { Dict } from "@/lib/i18n/dictionaries/uz";
 
 // OpenFreeMap — ochiq, kalitsiz, reklamasiz vektor xarita (OpenStreetMap ma'lumotlari)
 const STYLE = "https://tiles.openfreemap.org/styles/bright";
 
 /** Faqat client'da, next/dynamic orqali yuklanadi (maplibre ~800KB — asosiy bundle'ga tushmaydi) */
-export default function MapView() {
+export default function MapView({ t, address }: { t: Dict["map"]; address: string }) {
   const el = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -26,15 +28,7 @@ export default function MapView() {
       attributionControl: { compact: true },
       // Sahifa skroll'ini "o'g'irlamaslik" uchun: kompyuterda Ctrl + g'ildirak, telefonda ikki barmoq
       cooperativeGestures: true,
-      locale: {
-        "CooperativeGesturesHandler.WindowsHelpText": "Kattalashtirish uchun Ctrl + g‘ildirakdan foydalaning",
-        "CooperativeGesturesHandler.MacHelpText": "Kattalashtirish uchun ⌘ + g‘ildirakdan foydalaning",
-        "CooperativeGesturesHandler.MobileHelpText": "Xaritani ikki barmoq bilan suring",
-        "NavigationControl.ZoomIn": "Kattalashtirish",
-        "NavigationControl.ZoomOut": "Kichiklashtirish",
-        "Map.Title": "Onlayn Hamshira joylashuvi xaritasi",
-        "AttributionControl.ToggleAttribution": "Ma'lumot manbalari",
-      },
+      locale: t.controls,
       pitchWithRotate: false,
       dragRotate: false,
     });
@@ -55,13 +49,14 @@ export default function MapView() {
       if (!reduced) map.easeTo({ zoom: 16.4, duration: 1400 });
     });
     return () => map.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- matnlar sahifa umri davomida o'zgarmaydi
   }, []);
 
   return (
     <div
       ref={el}
       data-lenis-prevent
-      aria-label={`Xarita: ${OFFICE.name}, ${OFFICE.address}`}
+      aria-label={fill(t.regionLabel, { name: OFFICE.name, address })}
       role="region"
       className={`absolute inset-0 transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
     />
