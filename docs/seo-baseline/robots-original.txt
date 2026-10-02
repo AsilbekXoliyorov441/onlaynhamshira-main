@@ -1,0 +1,19 @@
+User-Agent: *
+Disallow: /page66424133.html
+Disallow: /header
+Disallow: /page67007365.html
+Disallow: /error404
+Disallow: /page67433297.html
+Disallow: /footer
+Disallow: /tilda/form*
+Disallow: /tilda/rec*
+Disallow: /tilda/click*
+Disallow: /tilda/scroll*
+Disallow: /tilda/popup*
+Disallow: /tilda/cart*
+Disallow: /tilda/product*
+Disallow: /tilda/event*
+Disallow:
+
+
+Sitemap: https://onlaynhamshira.uz/sitemap.xml
