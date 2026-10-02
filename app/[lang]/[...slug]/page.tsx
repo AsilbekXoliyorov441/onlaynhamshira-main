@@ -2,14 +2,24 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { preload } from "react-dom";
 import Header from "@/components/Header";
-import { Contact, Footer } from "@/components/Sections";
-import { MobileCTA } from "@/components/Interactive";
+import { Footer } from "@/components/Sections";
+import { MobileCTA } from "@/components/MobileCTA";
 import { LegacyCta, QrRedirect } from "@/components/LegacyPage";
 import { OG_LOCALE, hasLocale, localePath } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { findLegacyPage, legacyPages, slugOf } from "@/lib/seo/legacy";
 import { NAV_KEY_BY_GROUP } from "@/lib/nav";
+import { EXPERT } from "@/lib/expert";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/site";
+import { isArticle } from "@/lib/blog";
+import { CertificatesPage } from "@/components/certificates/CertificatesPage";
+import { ExpertPage } from "@/components/ExpertPage";
+import { WhyPage } from "@/components/WhyPage";
+import { ContactsPage } from "@/components/ContactsPage";
+import { AppLanding } from "@/components/AppLanding";
+import { LegalPage } from "@/components/legal/LegalPage";
+import { BlogIndexPage, BlogPostPage } from "@/components/blog/BlogPages";
+import { WHY } from "@/lib/why";
 
 // Eski Tilda sahifalari: har biri build vaqtida statik HTML. Ro'yxatda yo'q yo'l — 404
 export const dynamicParams = false;
@@ -77,9 +87,13 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
   if (!pg || !hasLocale(lang)) notFound();
   const t = await getDictionary(lang);
   const home = localePath(lang);
+  // Blog va maqolalar — yangi dizayn (faqat sahifa tanasi; <head>, JSON-LD va URL o'zgarmaydi)
+  const blog = pg.group === "blogIndex" ? "index" : isArticle(pg) ? "post" : null;
 
   // Birinchi rasm odatda LCP: <head>'da oldindan yuklash — HTML'ni oxirigacha o'qishni kutmaydi
-  const lcp = pg.group !== "qr" && pg.html.match(/<img fetchpriority="high"[^>]*>/)?.[0];
+  // Yangi dizayndagi sahifalar (blog, compare, contacts) LCP rasmini o'zi oldindan yuklaydi
+  const custom = !!blog || ["compare", "contacts", "app", "legal"].includes(pg.group);
+  const lcp = !custom && pg.group !== "qr" && pg.group !== "expert" && pg.html.match(/<img fetchpriority="high"[^>]*>/)?.[0];
   if (lcp) {
     const at = (n: string) => lcp.match(new RegExp(`\\s${n}="([^"]*)"`))?.[1];
     const src = at("src");
@@ -110,18 +124,46 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
         {t.common.skipToContent}
       </a>
       <Header lang={lang} t={t.header} common={t.common} home={home} current={NAV_KEY_BY_GROUP[pg.group]} />
-      <main id="main" className="px-4 pt-[calc(72px+env(safe-area-inset-top))] sm:px-6">
-        <article className="legacy-prose mx-auto max-w-[860px] py-10 sm:py-14" dangerouslySetInnerHTML={{ __html: pg.html }} />
-        {pg.group !== "legal" && <LegacyCta t={t.legacy} cta={t.common.callNurse} />}
-      </main>
-      {pg.group === "contacts" && (
-        <div className="mt-10">
-          <Contact t={t.contact} map={t.map} />
-        </div>
+      {pg.group === "expert" ? (
+        // Hamkor sahifasi — Tilda HTML o'rniga alohida dizayn (matnlar lib/expert.ts da, metadata JSON'da)
+        <main id="main">
+          <ExpertPage t={EXPERT[pg.contentLang]} />
+        </main>
+      ) : pg.group === "compare" ? (
+        // "Nega biz?" — taqqoslash sahifasi (matnlar lib/why.ts da, metadata/JSON-LD JSON'da)
+        <main id="main">
+          <WhyPage t={WHY[pg.contentLang]} html={pg.html} callLabel={t.mobileCta.call} />
+        </main>
+      ) : pg.group === "app" ? (
+        <main id="main">
+          <AppLanding html={pg.html} t={t} />
+        </main>
+      ) : pg.group === "legal" ? (
+        <main id="main">
+          <LegalPage pg={pg} t={t} lang={lang} />
+        </main>
+      ) : pg.group === "contacts" ? (
+        <main id="main">
+          <ContactsPage html={pg.html} t={t} lang={lang} />
+        </main>
+      ) : blog ? (
+        // Blog muqova/LCP rasmini o'zi oldindan yuklaydi (components/blog/BlogPages.tsx)
+        <main id="main" className="pt-[calc(80px+env(safe-area-inset-top))]">
+          {blog === "index" ? <BlogIndexPage pg={pg} t={t} /> : <BlogPostPage pg={pg} t={t} lang={lang} />}
+        </main>
+      ) : (
+        <main id="main" className="px-4 pt-[calc(72px+env(safe-area-inset-top))] sm:px-6">
+          {pg.group === "certificates" ? (
+          <CertificatesPage html={pg.html} t={t.certificates} home={home} homeLabel={t.legacy.home} closeLabel={t.common.close} />
+        ) : (
+          <article className="legacy-prose mx-auto max-w-[860px] py-10 sm:py-14" dangerouslySetInnerHTML={{ __html: pg.html }} />
+        )}
+          <LegacyCta t={t.legacy} cta={t.common.callNurse} />
+        </main>
       )}
       <div className="h-10" />
       <Footer t={t.footer} common={t.common} lang={lang} home={home} />
-      <MobileCTA t={t.mobileCta} cta={t.common.callNurse} />
+      {pg.group !== "expert" && <MobileCTA t={t.mobileCta} cta={t.common.callNurse} />}
     </>
   );
 }

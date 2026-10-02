@@ -6,7 +6,9 @@ import Services from "@/components/Services";
 import ServiceBento from "@/components/ServiceBento";
 import { AppBand, Benefits, Contact, Footer, News, Safety } from "@/components/Sections";
 import HowItWorks from "@/components/how-it-works/HowItWorks";
-import { Faq, MobileCTA, Reviews, Specialists } from "@/components/Interactive";
+import { Faq, Reviews, Specialists } from "@/components/Interactive";
+import { MobileCTA } from "@/components/MobileCTA";
+import { JoinBanner } from "@/components/JoinBanner";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
@@ -30,7 +32,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Services t={t.services} common={common} />
         <AppBand t={t.app} />
         <Safety t={t.safety} lang={lang} />
-        <Specialists t={t.specialists} />
+        <Specialists t={t.specialists}>
+          <JoinBanner t={t.join} lang={lang} />
+        </Specialists>
         <Reviews t={t.reviews} stars={common.fiveStars} />
         <News t={t.news} lang={lang} />
         <Faq t={t.faq} />

@@ -50,7 +50,12 @@ function setupGL(canvas: HTMLCanvasElement) {
  *  2) bo'lim ekranga yaqinlashganda — video yuklanadi va WebGL canvas'ga chiziladi
  *  WebGL bo'lmasa yoki prefers-reduced-motion'da poster qoladi.
  */
-export function AppPhone({ alt, className = "" }: { alt: string; className?: string }) {
+/**
+ * priority — birinchi ekranda (LCP): poster darhol, yuqori ustuvorlik bilan yuklanadi.
+ * deferVideo — video foydalanuvchining birinchi harakatidan keyin (scroll/bosish/klaviatura) boshlanadi:
+ * birinchi ekranda video dekodlash + WebGL sahifa yuklanishi paytida asosiy oqimni band qilmasin.
+ */
+export function AppPhone({ alt, className = "", priority = false, deferVideo = false }: { alt: string; className?: string; priority?: boolean; deferVideo?: boolean }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const video = useRef<HTMLVideoElement>(null);
@@ -61,6 +66,12 @@ export function AppPhone({ alt, className = "" }: { alt: string; className?: str
   useEffect(() => {
     const el = wrap.current;
     if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (deferVideo) {
+      const evs = ["pointerdown", "keydown", "wheel", "touchstart", "scroll"] as const;
+      const go = () => { setLoad(true); evs.forEach((e) => window.removeEventListener(e, go)); };
+      evs.forEach((e) => window.addEventListener(e, go, { passive: true, once: true }));
+      return () => evs.forEach((e) => window.removeEventListener(e, go));
+    }
     const io = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return;
@@ -71,7 +82,7 @@ export function AppPhone({ alt, className = "" }: { alt: string; className?: str
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [deferVideo]);
 
   // Har bir video kadrini WebGL orqali chizish
   useEffect(() => {
@@ -111,7 +122,8 @@ export function AppPhone({ alt, className = "" }: { alt: string; className?: str
         alt={alt}
         width={W}
         height={H}
-        loading="lazy"
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
         decoding="async"
         className={`absolute inset-0 size-full transition-opacity duration-300 ${ready ? "opacity-0" : ""}`}
       />

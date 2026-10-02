@@ -1,0 +1,400 @@
+/* Mutaxassislar ilovasining jonli demosi — "Onlayn Hamshira Mutaxassis" ilovasi skrinshotlari uslubida */
+
+.wrap {
+  --navy: #10202e;
+  --navy-2: #172b3c;
+  --modal: #1b3346;
+  --muted: #8ea2b3;
+  --ok: #17d98a;
+  --skip: #ff7a6b;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ---------- Telefon: titan korpus, yon tugmalar, Dynamic Island ---------- */
+.device {
+  position: relative;
+  width: 304px;
+  height: 628px;
+  flex: none;
+}
+.frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 54px;
+  padding: 4px;
+  /* titan rang: yorug'lik chetlarda */
+  background:
+    linear-gradient(145deg, #9aa3ad 0%, #545b63 12%, #2b3036 30%, #1c2025 50%, #2e3339 72%, #5c636b 88%, #a3abb4 100%);
+  box-shadow:
+    0 50px 90px -35px rgb(16 41 58 / 0.6),
+    0 18px 30px -18px rgb(16 41 58 / 0.45),
+    inset 0 0 0 1px rgb(255 255 255 / 0.18);
+}
+.bezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  padding: 9px;
+  background: #050607;
+  box-shadow: inset 0 0 0 1.5px #24282d;
+}
+/* Yon tugmalar */
+.btn {
+  position: absolute;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #3a4047, #8e969f 50%, #3a4047);
+}
+.btnAction { left: -3px; top: 112px; height: 30px; }
+.btnVolUp { left: -3px; top: 166px; height: 54px; }
+.btnVolDown { left: -3px; top: 232px; height: 54px; }
+.btnPower { right: -3px; top: 190px; height: 84px; }
+.island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  z-index: 50;
+  width: 96px;
+  height: 28px;
+  margin-left: -48px;
+  border-radius: 999px;
+  background: #000;
+}
+.island::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #3b4a6b 0 20%, #11151d 45%, #05070a 70%);
+}
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 41px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.3;
+  isolation: isolate;
+  -webkit-font-smoothing: antialiased;
+}
+/* Shisha yaltirashi */
+.glare {
+  position: absolute;
+  inset: 9px;
+  z-index: 60;
+  border-radius: 41px;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0.04) 22%, transparent 38%);
+}
+.homeBar {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  z-index: 45;
+  width: 108px;
+  height: 4px;
+  margin-left: -54px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.85);
+}
+.homeBar.dark { background: rgb(0 0 0 / 0.75); }
+@media (max-width: 400px) {
+  .device { transform: scale(0.86); margin: -44px 0; }
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  animation: enter 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes enter { from { opacity: 0; transform: translateX(22px); } }
+
+.sb {
+  height: 46px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 26px 0 30px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 2;
+}
+.sbIcons { display: flex; align-items: center; gap: 5px; }
+.sbIcons svg { display: block; }
+
+/* Bosilish nuqtasi */
+.tap {
+  position: absolute;
+  z-index: 40;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.35);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 4px rgb(37 182 233 / 0.35);
+  opacity: 0;
+  pointer-events: none;
+}
+.tap.go { animation: tap 0.7s ease-out; }
+@keyframes tap { 0% { opacity: 0; transform: scale(1.4); } 30% { opacity: 1; transform: scale(0.8); } 100% { opacity: 0; transform: scale(1.8); } }
+.pressed { transform: scale(0.95) !important; transition: transform 0.12s; }
+
+/* ---------- 1. Play Market ---------- */
+.store { background: #131314; color: #e3e3e3; }
+.storeTop { display: flex; justify-content: space-between; padding: 4px 18px 0; color: #e3e3e3; }
+.storeApp { display: flex; gap: 14px; align-items: center; padding: 22px 18px 0; }
+.storeIcon { position: relative; width: 64px; height: 64px; flex: none; }
+.storeIcon .ic {
+  position: absolute; inset: 0; display: grid; place-items: center; border-radius: 16px;
+  background: linear-gradient(135deg, #55dd62, #25b6e9);
+  transition: transform 0.4s, border-radius 0.4s;
+}
+.storeIcon .ic img { width: 38px; height: auto; }
+.loading .storeIcon .ic { transform: scale(0.76); border-radius: 50%; }
+.ring { position: absolute; inset: -6px; width: 76px; height: 76px; transform: rotate(-90deg); opacity: 0; transition: opacity 0.3s; }
+.loading .ring { opacity: 1; }
+.ring circle { fill: none; stroke: #a8c7fa; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 220; transition: stroke-dashoffset 0.12s linear; }
+.storeName { font-size: 18px; font-weight: 500; line-height: 1.15; }
+.storeDev { margin-top: 4px; font-size: 11px; font-weight: 500; color: #a8c7fa; }
+.storeStats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 22px 12px 0; text-align: center; font-size: 10px; color: #c4c7c5; }
+.storeStats div + div { border-left: 1px solid #444; }
+.storeStats b { display: block; margin-bottom: 3px; font-size: 13px; color: #e3e3e3; }
+.storeBtn {
+  margin: 22px 16px 0; height: 38px; border-radius: 999px; border: 0;
+  background: #a8c7fa; color: #062e6f; font: inherit; font-size: 13px; font-weight: 600;
+  display: grid; place-items: center; transition: transform 0.15s;
+}
+.storeBtn.ghost { background: #2a2a2b; color: #8e918f; }
+.storeShots { display: flex; gap: 8px; padding: 22px 16px 0; }
+.storeShots span {
+  flex: 1; height: 176px; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 10px 6px 0; border-radius: 12px; background: linear-gradient(170deg, #3a9b5c, #1f7a4b);
+  color: #fff; font-size: 8.5px; font-weight: 700; line-height: 1.15; text-align: center;
+}
+.storeShots span:nth-child(2) { background: linear-gradient(170deg, #2f86c4, #22a37e); }
+.storeShots span:nth-child(3) { background: linear-gradient(170deg, #31b39a, #2a7fbf); }
+/* Kichik telefon ichida ilova ekrani: gradient sarlavha, balans kartasi, holat slayderi */
+.storeShots i {
+  width: 50px; flex: 1; border-radius: 9px 9px 0 0; border: 3px solid #0d1117; border-bottom: 0;
+  background:
+    linear-gradient(90deg, #4fd96a, #2aa9ea) 5px 56px / calc(100% - 10px) 8px no-repeat,
+    linear-gradient(135deg, #6cc8f2, #3aa9e6) 5px 32px / calc(100% - 10px) 18px no-repeat,
+    linear-gradient(135deg, #5be06a, #2aa9ea) 0 0 / 100% 26px no-repeat,
+    #10202e;
+}
+.storeMeta { display: flex; gap: 6px; padding: 16px 16px 0; }
+.storeMeta b { padding: 5px 10px; border-radius: 8px; border: 1px solid #444; font-size: 10px; font-weight: 500; color: #c4c7c5; }
+
+/* Play Market qidiruv natijalari */
+.psSearch { display: flex; align-items: center; gap: 12px; padding: 8px 18px 0; color: #e3e3e3; }
+.psSearch span { flex: 1; font-size: 15px; }
+.psChips { display: flex; gap: 6px; padding: 14px 14px 12px; border-bottom: 1px solid #333; overflow: hidden; }
+.psChips b { flex: none; display: inline-flex; align-items: center; gap: 3px; padding: 6px 11px; border: 1px solid #5f6368; border-radius: 9px; font-size: 11px; font-weight: 500; color: #e3e3e3; }
+.psList { display: flex; flex-direction: column; gap: 4px; padding: 10px 8px 0; }
+.psRow { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 14px; transition: background 0.2s, transform 0.15s; }
+.psRow.pressed { background: rgb(255 255 255 / 0.08); }
+.psIcon { width: 48px; height: 48px; flex: none; display: grid; place-items: center; border-radius: 12px; background: linear-gradient(135deg, #55dd62, #25b6e9); }
+.psClient { background: linear-gradient(135deg, #25b6e9, #55dd62); }
+.psRow p { margin: 0; font-size: 13px; font-weight: 500; color: #e3e3e3; }
+.psRow small { display: block; margin-top: 2px; font-size: 10.5px; color: #c4c7c5; }
+.psRow em { display: inline-flex; align-items: center; gap: 2px; margin-top: 5px; padding: 2px 7px; border-radius: 6px; background: #2a2a2b; font-style: normal; font-size: 10px; color: #c4c7c5; }
+.psSkel .psIcon { background: #2a2a2b; }
+.psSkel div { display: flex; flex: 1; flex-direction: column; gap: 6px; }
+.psSkel i { height: 8px; border-radius: 4px; background: #2a2a2b; }
+.psSkel i:nth-child(1) { width: 70%; } .psSkel i:nth-child(2) { width: 50%; } .psSkel i:nth-child(3) { width: 30%; }
+.psNav { margin-top: auto; display: flex; justify-content: space-around; padding: 8px 4px 22px; background: #1e1f20; font-size: 9.5px; color: #c4c7c5; }
+.psNav span { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.psNav i { display: grid; place-items: center; width: 44px; height: 26px; border-radius: 999px; }
+.psNav .on { color: #a8c7fa; }
+.psNav .on i { background: #004a77; color: #c2e7ff; }
+
+/* ---------- 2. Ro'yxatdan o'tish ---------- */
+.reg { background: #f6f8fa; color: #1e2328; }
+.reg .sb { color: #1e2328; }
+.regHead { padding: 14px 20px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.regHead img { width: 54px; height: auto; }
+.regHead p { margin: 0; font-size: 15px; font-weight: 700; text-align: center; }
+.regCard { margin: 18px 14px 0; padding: 14px; border-radius: 16px; background: #fff; box-shadow: 0 2px 10px rgb(20 30 40 / 0.05); }
+.lbl { margin-bottom: 8px; font-size: 11.5px; color: #6e7781; }
+.inp { display: flex; align-items: center; height: 42px; padding: 0 12px; border: 1.5px solid #e7eaee; border-radius: 12px; font-size: 14px; transition: border-color 0.3s; }
+.inp.focus { border-color: #25b6e9; }
+.cc { margin-right: 10px; padding-right: 10px; border-right: 1.5px solid #9aa1a8; }
+.caret { width: 2px; height: 18px; margin-left: 1px; background: #25b6e9; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.otp span { height: 40px; display: grid; place-items: center; border: 1.5px solid #e7eaee; border-radius: 10px; font-size: 17px; font-weight: 600; transition: border-color 0.2s, transform 0.2s; }
+.otp span.on { border-color: #25b6e9; transform: translateY(-2px); }
+.gbtn {
+  margin: auto 14px 22px; height: 44px; border-radius: 999px;
+  background: linear-gradient(90deg, #55dd62, #25b6e9); color: #fff;
+  display: grid; place-items: center; font-size: 14px; font-weight: 600; transition: transform 0.15s;
+}
+.spin { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid rgb(255 255 255 / 0.35); border-top-color: #fff; animation: rot 0.8s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+
+/* ---------- 3. Bosh sahifa ---------- */
+.home { background: var(--navy); }
+.homeTop {
+  position: absolute; inset: 0 0 auto; height: 250px;
+  background: linear-gradient(135deg, #5be06a 0%, #2cc7b3 55%, #2aa9ea 100%);
+}
+.homeHead { position: relative; display: flex; align-items: center; gap: 10px; padding: 6px 16px 0; }
+.avatar { width: 40px; height: 40px; flex: none; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px rgb(255 255 255 / 0.7); }
+.homeHead b { flex: 1; font-size: 15px; }
+.roundBtn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: rgb(255 255 255 / 0.25); position: relative; color: #fff; }
+.roundBtn.bell::after { content: ""; position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: #ff4d4f; }
+.stories { position: relative; display: flex; gap: 8px; padding: 14px 16px 0; }
+.stories span {
+  position: relative; overflow: hidden;
+  width: 84px; height: 96px; flex: none; padding: 7px; border-radius: 12px;
+  border: 2px solid rgb(255 255 255 / 0.85); font-size: 9.5px; font-weight: 700; line-height: 1.15;
+  background: linear-gradient(160deg, #2bb5e8, #1d8fd0);
+}
+.stories img { position: absolute; right: -6px; bottom: -4px; width: 64px; height: 64px; object-fit: contain; }
+.stories span:nth-child(2) { background: linear-gradient(160deg, #3ac0ee, #2a9bd8); }
+.stories span:nth-child(3) { background: linear-gradient(160deg, #c27cf6, #8a5ce6); }
+.panel {
+  position: relative; z-index: 1; margin-top: 18px; flex: 1;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px 14px 0; border-radius: 26px 26px 0 0; background: var(--navy);
+}
+.panel h6 { margin: 0; font-size: 13px; font-weight: 700; }
+.balance {
+  display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px;
+  background: linear-gradient(135deg, #6cc8f2, #3aa9e6);
+}
+.balance .row { display: flex; justify-content: space-between; align-items: baseline; }
+.balance strong { font-size: 21px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.balance small { font-size: 10px; opacity: 0.8; }
+.balance .pill { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: #fff; color: #1f8fd0; font-size: 11px; font-weight: 600; }
+
+/* Holat slayderi */
+.slider {
+  position: relative; height: 50px; padding: 5px; border-radius: 999px; background: var(--navy-2);
+}
+.track {
+  position: relative; height: 100%; display: grid; place-items: center; border-radius: 999px;
+  background: linear-gradient(90deg, #ffb46b, #ff8a3d);
+  font-size: 11.5px; font-weight: 500; color: rgb(255 255 255 / 0.95);
+  transition: background 0.5s;
+}
+.online .track { background: linear-gradient(90deg, #4fd96a, #2cc7b3 55%, #2aa9ea); }
+.knob {
+  position: absolute; top: 0; left: 0; width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 50%; background: #fff; color: #ff8a3d; font-weight: 800; font-size: 15px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.2);
+  transition: left 0.8s cubic-bezier(0.5, 0, 0.2, 1), color 0.5s;
+}
+.online .knob { color: #1fbf8f; }
+.cardWarn { display: flex; align-items: center; gap: 10px; color: #fff; padding: 11px 12px; border-radius: 14px; border: 1.5px solid #f2a915; background: #2a2a20; font-size: 11px; }
+.earn { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; background: var(--navy-2); }
+.earn span { color: var(--muted); font-size: 11px; }
+.earn strong { font-size: 15px; color: #4fe39a; font-variant-numeric: tabular-nums; }
+.tabbar {
+  margin-top: auto; display: flex; justify-content: space-around; padding: 10px 6px 16px;
+  background: #0c1922; font-size: 10px; color: var(--muted);
+}
+.tabbar span { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.tabbar svg { color: #50606e; }
+.tabbar .on { color: #fff; }
+.tabbar .on svg { color: #3fd6a6; }
+
+/* ---------- 4. Yangi buyurtma oynasi ---------- */
+.dim { position: absolute; inset: 0; z-index: 5; background: rgb(5 12 18 / 0.55); animation: fade 0.3s both; }
+@keyframes fade { from { opacity: 0; } }
+.modal {
+  position: absolute; left: 12px; right: 12px; top: 120px; z-index: 6;
+  padding: 18px 16px 16px; border-radius: 26px; background: var(--modal);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.6);
+  animation: pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+@keyframes pop { from { opacity: 0; transform: translateY(30px) scale(0.96); } }
+.modal h5 { margin: 0; text-align: center; font-size: 15px; font-weight: 600; }
+.timer { margin: 6px 0 12px; text-align: center; font-size: 36px; font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+.mrow { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 12px; }
+.mrow .em { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 10px; }
+.em.red { background: rgb(255 92 92 / 0.16); color: #ff6b6b; }
+.em.blue { background: rgb(37 182 233 / 0.16); color: #4cc4f0; }
+.em.amber { background: rgb(255 184 77 / 0.16); color: #ffbe55; }
+.em.green { background: rgb(23 217 138 / 0.16); color: #3fe39a; }
+.mrow .grow { flex: 1; min-width: 0; }
+.mrow small { display: block; color: var(--muted); font-size: 10.5px; }
+.mrow .right { text-align: right; font-weight: 600; }
+.price { color: #3fe39a; font-size: 15px; font-weight: 700; }
+.mbtns { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; margin-top: 12px; }
+.mbtns span { display: grid; place-items: center; height: 42px; border-radius: 999px; font-size: 12.5px; font-weight: 600; text-align: center; transition: transform 0.15s; }
+.mbtns .no { background: var(--skip); }
+.mbtns .yes { background: linear-gradient(90deg, #12e08a, #19c97c); color: #062b1b; }
+
+/* ---------- 5. Buyurtma jarayoni ---------- */
+.flow { background: var(--navy); }
+.map {
+  position: relative; height: 210px; flex: none; overflow: hidden;
+  background:
+    linear-gradient(115deg, transparent 46%, #f5d77d 46% 50%, transparent 50%),
+    linear-gradient(25deg, transparent 58%, #ffffff 58% 61%, transparent 61%),
+    linear-gradient(160deg, transparent 30%, #ffffff 30% 33%, transparent 33%),
+    #e9efe7;
+}
+.map::after { content: ""; position: absolute; inset: auto 0 0; height: 60px; background: linear-gradient(transparent, var(--navy)); }
+.route {
+  position: absolute; left: 70px; top: 60px; width: 150px; height: 90px;
+  border: 3px dashed #25b6e9; border-left: 0; border-bottom: 0; border-radius: 0 40px 0 0;
+}
+.mapPin { position: absolute; left: 196px; top: 34px; width: 28px; height: auto; }
+.me { position: absolute; left: 56px; top: 140px; width: 16px; height: 16px; border-radius: 50%; background: #25b6e9; box-shadow: 0 0 0 6px rgb(37 182 233 / 0.3); }
+.flowCard { position: relative; z-index: 1; margin: -26px 14px 0; padding: 14px; border-radius: 18px; background: var(--navy-2); }
+.flowCard h6 { margin: 0 0 10px; font-size: 13px; }
+.stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
+.stages span { display: flex; flex-direction: column; gap: 6px; font-size: 10px; color: var(--muted); }
+.stages span::before { content: ""; height: 4px; border-radius: 4px; background: #2d4253; transition: background 0.4s; }
+.stages .on { color: #fff; }
+.stages .on::before { background: linear-gradient(90deg, #55dd62, #25b6e9); }
+.flowBtn { margin: auto 14px 22px; height: 46px; border-radius: 999px; display: grid; place-items: center; background: linear-gradient(90deg, #55dd62, #25b6e9); font-size: 14px; font-weight: 600; transition: transform 0.15s; }
+.doneWrap { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; background: rgb(16 32 46 / 0.92); animation: fade 0.3s both; }
+.doneWrap div { display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 15px; font-weight: 600; }
+.check { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #55dd62, #25b6e9); animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+
+/* ---------- 6. To'lov ---------- */
+.toast {
+  position: absolute; left: 12px; right: 12px; top: 46px; z-index: 8;
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 16px;
+  background: #fff; color: #0b2a1c; box-shadow: 0 20px 40px -18px rgb(0 0 0 / 0.6);
+  animation: drop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+@keyframes drop { from { opacity: 0; transform: translateY(-30px); } }
+.toast .coin { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #55dd62, #25b6e9); color: #fff; font-weight: 800; }
+.toast b { display: block; font-size: 12.5px; }
+.toast span { color: #15a35a; font-size: 14px; font-weight: 700; }
+
+/* ---------- Telefon ostidagi bosqich ko'rsatkichi ---------- */
+.caption {
+  display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px;
+  border-radius: 999px; background: #fff; box-shadow: 0 12px 30px -16px rgb(16 41 58 / 0.45);
+  font-size: 14px; font-weight: 600; color: var(--color-ink);
+}
+.caption .num { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--color-brand), var(--color-brand-blue)); color: #fff; font-size: 12px; font-variant-numeric: tabular-nums; }
+.caption .bar { display: flex; gap: 3px; margin-left: 4px; }
+.caption .bar i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-line); transition: width 0.3s, background 0.3s; }
+.caption .bar i.on { width: 16px; border-radius: 4px; background: var(--color-brand-teal); }
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap * { animation: none !important; transition: none !important; }
+}

@@ -80,3 +80,17 @@ const img = (path: string) => `/img/${path}`;
 export const REVIEW_IMAGES = ["01", "03", "04", "02", "06", "10", "08"].map((n) => img(`avatars/${n}.webp`));
 
 export const NEWS_IMAGES = ["travmatolog", "ramazon", "roza"].map((n) => img(`news/${n}.webp`));
+
+/**
+ * Sertifikatlar sahifasi (/certificates). Tartib content/legacy/*certificates.json dagi rasmlar va
+ * lug'atlardagi `certificates.items` bilan bir xil. verify — hujjatdagi QR kodning o'zi olib boradigan
+ * rasmiy manzil (QR'dan o'qilgan, o'zgartirmang).
+ */
+export const CERTIFICATES = [
+  { number: "1072160", date: "13.12.2021", verify: "https://new.birdarcha.uz/document/b85f81d9-790c-45f3-8388-d16e1fd49d4b" },
+  { number: "AA 0001113", date: "02.05.2024", verify: "https://pd.gov.uz/appeals/check?tin=309109813" },
+  { number: "3755", date: "31.01.2025", verify: "https://my.it-park.uz/api/download-certificate-by-qrcode/O0fYYhbWsmZG" },
+] as const;
+
+/** Soliq to'lovchining identifikatsiya raqami (STIR) — guvohnomalardagi bilan bir xil */
+export const COMPANY_TIN = "309 109 813";
