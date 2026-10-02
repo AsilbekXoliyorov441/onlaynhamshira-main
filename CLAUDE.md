@@ -60,3 +60,8 @@ uni `lib/seo/routes.ts` ga qo'shing (sitemap'ga shundan tushadi) va `seo:check`d
 
 `/home-detox`, `/postoperative-care-at-home`, `/posleoperatsionnyy-uhod-doma` — canonical va title
 detoks maqolasiga ko'rsatadi (Tilda'da ham shunday). Tuzatish faqat marketing roziligi bilan.
+
+## Git
+
+- Commit xabarlari **ingliz tilida** yoziladi (sarlavha + qisqa ro'yxat).
+- Commit/push qilishdan oldin `npm run seo:check` o'tgan bo'lishi shart (yuqoriga qarang).
