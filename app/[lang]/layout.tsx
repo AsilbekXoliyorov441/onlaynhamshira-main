@@ -7,6 +7,8 @@ import { DownloadProvider } from "@/components/DownloadModal";
 import { BackToTop, SmoothScroll } from "@/components/Motion";
 import { LOCALES, OG_LOCALE, hasLocale, localePath } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { Analytics } from "@/components/Analytics";
+import { SITE_URL, DEFAULT_OG_IMAGE, GOOGLE_SITE_VERIFICATION } from "@/lib/seo/site";
 
 const onest = Onest({
   // Faqat lotin oldindan yuklanadi; kirill (ru) unicode-range orqali faqat kerak bo'lganda yuklanadi
@@ -24,10 +26,11 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   if (!hasLocale(lang)) return {};
   const { meta } = await getDictionary(lang);
   return {
-    metadataBase: new URL("https://onlaynhamshira.uz"),
+    metadataBase: new URL(SITE_URL),
     title: meta.title,
     description: meta.description,
     keywords: meta.keywords,
+    verification: { google: GOOGLE_SITE_VERIFICATION },
     alternates: {
       canonical: localePath(lang),
       languages: { ...Object.fromEntries(LOCALES.map((l) => [l, localePath(l)])), "x-default": "/" },
@@ -39,7 +42,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       locale: OG_LOCALE[lang],
       alternateLocale: LOCALES.filter((l) => l !== lang).map((l) => OG_LOCALE[l]),
       type: "website",
-      images: ["https://static.tildacdn.net/tild3462-3165-4335-b732-383031326461/photo.jpg"],
+      images: [DEFAULT_OG_IMAGE],
     },
     formatDetection: { telephone: false },
   };
@@ -90,6 +93,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         <DownloadProvider t={{ ...t.download, close: t.common.close, onlineApp: t.common.onlineApp }}>{children}</DownloadProvider>
         <SmoothScroll />
         <BackToTop label={t.common.backToTop} />
+        <Analytics />
       </body>
     </html>
   );

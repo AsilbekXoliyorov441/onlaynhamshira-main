@@ -2,7 +2,8 @@ import type { Dict } from "./uz";
 
 const ru: Dict = {
   meta: {
-    title: "Onlayn Hamshira — вызов медсестры на дом 24/7 | Быстро, удобно, безопасно!",
+    // ⚠️ Tilda SEO bilan bir xil saqlangan — reytingga ta'sir qilmaslik uchun o'zgartirmang (docs/seo-baseline)
+    title: "Вызов медсестры на дом – Onlayn Hamshira | 24/7 сервис",
     description:
       "Вызовите врача или медсестру на дом в Ташкенте, Нукусе, Фергане, Самарканде и Маргилане. Медицинская помощь и сестринский уход 24/7.",
     ogTitle: "Onlayn Hamshira — вызов медсестры на дом 24/7",

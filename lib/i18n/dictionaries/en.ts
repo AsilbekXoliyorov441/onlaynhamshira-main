@@ -2,7 +2,8 @@ import type { Dict } from "./uz";
 
 const en: Dict = {
   meta: {
-    title: "Onlayn Hamshira — Call a Nurse to Your Home 24/7 | Fast, Easy, Safe",
+    // ⚠️ Tilda SEO bilan bir xil saqlangan — reytingga ta'sir qilmaslik uchun o'zgartirmang (docs/seo-baseline)
+    title: "Home Nurse Service App – Onlayn Hamshira | 24/7 Medical Care",
     description:
       "Call a doctor or nurse to your home in Tashkent, Nukus, Fergana, Samarkand and Margilan. 24/7 medical help and home nursing care.",
     ogTitle: "Onlayn Hamshira — call a nurse to your home 24/7",
