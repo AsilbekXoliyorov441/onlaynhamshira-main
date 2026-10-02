@@ -199,11 +199,12 @@ body {
 .legacy-prose ol { list-style: decimal; padding-left: 1.4rem; }
 .legacy-prose li { margin-block: 0.35rem; }
 .legacy-prose li::marker { color: var(--color-brand-deep); }
-.legacy-prose a { color: var(--color-sky-deep); text-decoration: underline; text-underline-offset: 3px; }
+/* #0a6a94 — oq fonda 5.9:1 kontrast (WCAG AA); sky-deep (#1aa6d9) atigi 2.9:1 edi */
+.legacy-prose a { color: #0a6a94; text-decoration: underline; text-underline-offset: 3px; }
 .legacy-prose a:hover { color: var(--color-brand-deep); }
-.legacy-prose img { display: block; max-width: 100%; height: auto; border-radius: 20px; margin-inline: auto; }
+.legacy-prose img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 20px; margin-inline: auto; }
 .legacy-prose figure { margin-block: 1.5rem; }
-.legacy-prose figure.cover img { width: 100%; max-height: 520px; object-fit: cover; }
+.legacy-prose figure.cover img { object-fit: cover; }
 .legacy-prose iframe { width: 100%; aspect-ratio: 16 / 9; height: auto; border: 0; border-radius: 20px; }
 .legacy-prose table { width: 100%; border-collapse: collapse; font-size: 15px; display: block; overflow-x: auto; }
 .legacy-prose :is(th, td) { border: 1px solid var(--color-line); padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
@@ -218,7 +219,6 @@ body {
 .legacy-prose .zcell > :first-child { margin-top: 0; }
 .legacy-prose .zbtn a { display: inline-block; border-radius: 999px; background: var(--color-ink); color: #fff; padding: 0.7rem 1.4rem; font-weight: 600; text-decoration: none; }
 .legacy-prose .zbtn a:hover { background: var(--color-brand-deep); color: #fff; }
-.legacy-prose .zimg img { max-height: 560px; width: auto; }
 
 /* Maqolalardagi maxsus bloklar (HTML-kod bloklaridagi klasslar) */
 .legacy-prose :is(.highlight, .highlight-box, .info, .info-box, .notice, .quote, .oh-intro, .preamble-card, .toc-card, .seo-alert-card) {

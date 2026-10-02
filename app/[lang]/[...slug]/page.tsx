@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { preload } from "react-dom";
 import Header from "@/components/Header";
 import { Contact, Footer } from "@/components/Sections";
 import { MobileCTA } from "@/components/Interactive";
@@ -75,6 +76,14 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
   if (!pg || !hasLocale(lang)) notFound();
   const t = await getDictionary(lang);
   const home = localePath(lang);
+
+  // Birinchi rasm odatda LCP: <head>'da oldindan yuklash — HTML'ni oxirigacha o'qishni kutmaydi
+  const lcp = pg.group !== "qr" && pg.html.match(/<img fetchpriority="high"[^>]*>/)?.[0];
+  if (lcp) {
+    const at = (n: string) => lcp.match(new RegExp(`\\s${n}="([^"]*)"`))?.[1];
+    const src = at("src");
+    if (src) preload(src, { as: "image", fetchPriority: "high", imageSrcSet: at("srcset"), imageSizes: at("sizes") });
+  }
 
   const jsonLd = pg.jsonLd.length ? (
     <script

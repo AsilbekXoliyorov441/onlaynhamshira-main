@@ -23,7 +23,8 @@ export function LegacyCta({ t, cta }: { t: Dict["legacy"]; cta: string }) {
 
 /**
  * Bosma materiallardagi QR kodlar (/qr … /qr8): Tilda'dagi kabi qurilmaga qarab do'konga yo'naltiradi.
- * Tilda'da yo'naltirish darhol bo'lardi va analitika ko'pincha yuklanib ulgurmasdi. Bu yerda GA "qr_scan"
+ * Tilda'da yo'naltirish darhol bo'lardi va analitika ko'pincha yuklanib ulgurmasdi. Bu yerda analitika darhol
+ * yuklanadi (boshqa sahifalardagi kabi harakatni kutmaydi) va GA "qr_scan"
  * hodisasi yuborilguncha (ko'pi bilan 1.5s) kutiladi — skanlar statistikada ko'rinadi.
  */
 export function QrRedirect({
@@ -42,7 +43,7 @@ var ua=navigator.userAgent.toLowerCase();
 var url=ua.indexOf('android')>-1?${JSON.stringify(target.android)}:(/iphone|ipad|ipod/.test(ua)?${JSON.stringify(target.ios)}:${JSON.stringify(home)});
 var done=false;function go(){if(done)return;done=true;location.replace(url);}
 setTimeout(go,1500);
-(function wait(n){if(typeof window.gtag==='function'){window.gtag('event','qr_scan',{qr_code:${JSON.stringify(code)},event_callback:go,event_timeout:1200});}else if(n<14){setTimeout(function(){wait(n+1)},100);}})(0);
+(function wait(n){if(window.__ohLoadAnalytics){window.__ohLoadAnalytics();}if(typeof window.gtag==='function'){window.gtag('event','qr_scan',{qr_code:${JSON.stringify(code)},event_callback:go,event_timeout:1200});}else if(n<14){setTimeout(function(){wait(n+1)},100);}})(0);
 })();`;
   return (
     <main className="grid min-h-dvh place-items-center bg-mist px-4">

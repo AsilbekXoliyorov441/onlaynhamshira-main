@@ -8,24 +8,44 @@ import type { Dict } from "@/lib/i18n/dictionaries/uz";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
-/** Xarita bo'limi: kutubxona faqat ekranga yaqinlashganda yuklanadi; ustida manzil kartochkasi */
+/** Xarita bo'limi: kutubxona ekranga yaqinlashganda va foydalanuvchi harakatidan keyin yuklanadi; ustida manzil kartochkasi */
 export function ContactMap({ t, address, className = "" }: { t: Dict["map"]; address: string; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [load, setLoad] = useState(false);
 
+  // maplibre og'ir (~800KB, asosiy oqimda bir necha soniya): ekranga yaqin bo'lsa HAM foydalanuvchi
+  // sahifa bilan harakat qilgan bo'lsa (teginish/skroll/sichqoncha) yuklanadi. Xarita ekranning tepasida
+  // turgan sahifalarda (/contacts) birinchi chizish va interaktivlikni bloklamaydi.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
+    let visible = false;
+    let interacted = false;
+    const evs = ["pointerdown", "touchstart", "keydown", "scroll", "wheel", "mousemove"] as const;
+    const tryLoad = () => {
+      if (visible && interacted) {
         io.disconnect();
         setLoad(true);
+      }
+    };
+    const onInteract = () => {
+      interacted = true;
+      evs.forEach((e) => removeEventListener(e, onInteract, true));
+      tryLoad();
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        tryLoad();
       },
       { rootMargin: "300px 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
+    evs.forEach((e) => addEventListener(e, onInteract, { capture: true, passive: true }));
+    return () => {
+      io.disconnect();
+      evs.forEach((e) => removeEventListener(e, onInteract, true));
+    };
   }, []);
 
   return (

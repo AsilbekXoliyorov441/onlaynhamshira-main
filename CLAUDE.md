@@ -30,6 +30,9 @@ Qiymatni o'zgartirish kerak bo'lsa (marketing qarori bilan), alohida va aniq ayt
 3. **Tracking** (`lib/seo/site.ts`, `components/Analytics.tsx`) — GA4 `G-MP5XEFGJRB`,
    Google Ads `AW-17432829439` + `tel:` konversiyasi, Yandex Metrika `97597715`,
    Google Search Console tasdig'i. ID'larni o'zgartirmang, `<Analytics />`ni layout'dan olib tashlamang.
+   Kutubxonalar (gtag.js, tag.js) birinchi harakatda yoki 6 s dan keyin yuklanadi, hodisalar esa darhol
+   navbatga yoziladi. Ularni yana `<head>`/afterInteractive'da to'g'ridan-to'g'ri yuklamang: Lighthouse
+   Performance 40'larga, Best Practices 77 ga tushadi (third-party cookies). QR sahifalari darhol yuklaydi.
 4. **JSON-LD** — layout'dagi MedicalBusiness (har sahifada) va `content/legacy/*.json` → `jsonLd`.
 5. **sitemap.xml / robots.txt** — sitemap 86 URL'dan kam bo'lmasin; robots'da `Disallow: /` yoki
    `noindex` hech qachon bo'lmasin.

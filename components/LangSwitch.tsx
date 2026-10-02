@@ -23,7 +23,8 @@ export function LangSwitch({ lang, label, className = "" }: { lang: Locale; labe
                 }`}
               >
                 <span aria-hidden>{l}</span>
-                <span className="sr-only">{`${l.toUpperCase()} — ${LOCALE_NAMES[l]}`}</span>
+                {/* Tizim shrifti: ko'rinmaydigan "Русский" yozuvi uz/en sahifalarda Onest'ning kirill faylini (16KB) yuklatmasin */}
+                <span className="sr-only font-[system-ui]">{`${l.toUpperCase()} — ${LOCALE_NAMES[l]}`}</span>
               </a>
             </li>
           );
