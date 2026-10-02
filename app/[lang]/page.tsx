@@ -29,15 +29,15 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Benefits t={t.benefits} common={common} />
         <Services t={t.services} common={common} />
         <AppBand t={t.app} />
-        <Safety t={t.safety} />
+        <Safety t={t.safety} lang={lang} />
         <Specialists t={t.specialists} />
         <Reviews t={t.reviews} stars={common.fiveStars} />
-        <News t={t.news} />
+        <News t={t.news} lang={lang} />
         <Faq t={t.faq} />
         <div className="h-3" />
         <Contact t={t.contact} map={t.map} />
       </main>
-      <Footer t={t.footer} common={common} />
+      <Footer t={t.footer} common={common} lang={lang} />
       <MobileCTA t={t.mobileCta} cta={common.callNurse} />
     </>
   );

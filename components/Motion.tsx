@@ -79,6 +79,25 @@ export function SmoothScroll() {
   return null;
 }
 
+// Hujjat balandligi ResizeObserver orqali keshlanadi: u layout tugagach chaqiriladi.
+// scrollHeight'ni to'g'ridan-to'g'ri o'qish (ayniqsa hydration paytida) butun sahifani majburiy
+// qayta hisoblatardi — Lighthouse "Forced reflow" ~1.5s. Skroll paytida faqat scrollY o'qiladi.
+let docHeight = 0;
+let heightObserver: ResizeObserver | null = null;
+const heightListeners = new Set<() => void>();
+function watchDocHeight(cb: () => void) {
+  if (!heightObserver) {
+    heightObserver = new ResizeObserver(([e]) => {
+      docHeight = e.borderBoxSize?.[0]?.blockSize ?? e.contentRect.height;
+      heightListeners.forEach((f) => f());
+    });
+    heightObserver.observe(document.documentElement);
+  }
+  heightListeners.add(cb);
+  return () => { heightListeners.delete(cb); };
+}
+const scrollMax = () => docHeight - window.innerHeight;
+
 /**
  * Sahifa bo'ylab scroll progress (0..1) → :root dagi --scroll-p CSS o'zgaruvchisi.
  * React state emas: progress chizig'i/halqasi CSS orqali yangilanadi, komponentlar
@@ -88,15 +107,16 @@ function trackScrollProgress() {
   let raf = 0;
   const update = () => {
     raf = 0;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const max = scrollMax();
     document.documentElement.style.setProperty("--scroll-p", String(max > 0 ? Math.min(1, window.scrollY / max) : 0));
   };
   const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-  // Birinchi o'lchov keyingi kadrda — hydration paytida majburiy layout (forced reflow) bo'lmasin
-  onScroll();
+  // Birinchi o'lchov ResizeObserver'dan (layout tayyor bo'lgach) — majburiy reflow yo'q
+  const unwatch = watchDocHeight(onScroll);
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
   return () => {
+    unwatch();
     cancelAnimationFrame(raf);
     window.removeEventListener("scroll", onScroll);
     window.removeEventListener("resize", onScroll);
@@ -128,13 +148,13 @@ function useScrolledPast(ratio: number) {
     let raf = 0;
     const update = () => {
       raf = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const max = scrollMax();
       setPast(max > 0 && window.scrollY / max > ratio);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    onScroll();
+    const unwatch = watchDocHeight(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
+    return () => { unwatch(); cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
   }, [ratio]);
   return past;
 }

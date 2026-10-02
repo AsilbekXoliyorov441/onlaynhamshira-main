@@ -36,6 +36,13 @@ const ru: Dict = {
     nav: ["О приложении", "Услуги", "Специалисты", "Отзывы", "FAQ"],
     blog: "Блог",
     partner: "Стать партнёром и специалистом",
+    // Header menyusidagi qisqa nomlar (lib/nav.ts)
+    partnerShort: "Партнёрам",
+    more: "Ещё",
+    why: "Почему Onlayn Hamshira?",
+    whyShort: "Почему мы?",
+    certificates: "Сертификаты",
+    contacts: "Контакты",
   },
   download: {
     title: "Отсканируйте QR-код, чтобы установить приложение",

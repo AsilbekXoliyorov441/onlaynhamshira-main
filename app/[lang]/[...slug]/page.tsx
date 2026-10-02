@@ -8,6 +8,7 @@ import { LegacyCta, QrRedirect } from "@/components/LegacyPage";
 import { OG_LOCALE, hasLocale, localePath } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { findLegacyPage, legacyPages, slugOf } from "@/lib/seo/legacy";
+import { NAV_KEY_BY_GROUP } from "@/lib/nav";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/site";
 
 // Eski Tilda sahifalari: har biri build vaqtida statik HTML. Ro'yxatda yo'q yo'l — 404
@@ -108,7 +109,7 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-white">
         {t.common.skipToContent}
       </a>
-      <Header lang={lang} t={t.header} common={t.common} home={home} />
+      <Header lang={lang} t={t.header} common={t.common} home={home} current={NAV_KEY_BY_GROUP[pg.group]} />
       <main id="main" className="px-4 pt-[calc(72px+env(safe-area-inset-top))] sm:px-6">
         <article className="legacy-prose mx-auto max-w-[860px] py-10 sm:py-14" dangerouslySetInnerHTML={{ __html: pg.html }} />
         {pg.group !== "legal" && <LegacyCta t={t.legacy} cta={t.common.callNurse} />}
@@ -119,7 +120,7 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
         </div>
       )}
       <div className="h-10" />
-      <Footer t={t.footer} common={t.common} home={home} />
+      <Footer t={t.footer} common={t.common} lang={lang} home={home} />
       <MobileCTA t={t.mobileCta} cta={t.common.callNurse} />
     </>
   );

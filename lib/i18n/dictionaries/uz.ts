@@ -37,6 +37,13 @@ const uz = {
     nav: ["Ilova haqida", "Xizmatlar", "Mutaxassislar", "Fikr-mulohazalar", "FAQ"],
     blog: "Blog",
     partner: "Hamkor va mutaxassis bo‘ling",
+    // Header menyusidagi qisqa nomlar (lib/nav.ts)
+    partnerShort: "Hamkorlik",
+    more: "Yana",
+    why: "Nega Onlayn Hamshira?",
+    whyShort: "Nega biz?",
+    certificates: "Sertifikatlar",
+    contacts: "Kontaktlar",
   },
   download: {
     title: "Ilovani o‘rnatish uchun QR kodni skanerlang",

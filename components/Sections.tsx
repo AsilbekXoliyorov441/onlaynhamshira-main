@@ -8,6 +8,8 @@ import { ArrowRight, Globe, Mail } from "lucide-react";
 import { BENEFIT_ICONS, IMAGES, LINKS, NEWS_IMAGES } from "@/lib/data";
 import { fill } from "@/lib/i18n/format";
 import type { Dict } from "@/lib/i18n/dictionaries/uz";
+import { localePath, type Locale } from "@/lib/i18n/config";
+import { pageHref, sectionHref } from "@/lib/nav";
 import { StoreButtons } from "./DownloadModal";
 import { AppPhone } from "./AppPhone";
 import { ContactMap } from "./map/ContactMap";
@@ -134,7 +136,7 @@ export function AppBand({ t }: { t: Dict["app"] }) {
 
 /* ───────── Xavfsizlik ───────── */
 const SAFETY_ICONS: IconName[] = ["shield", "handshake", "chat", "headphone"];
-export function Safety({ t }: { t: Dict["safety"] }) {
+export function Safety({ t, lang }: { t: Dict["safety"]; lang: Locale }) {
   const tones = ["bg-peach", "bg-sky", "bg-lilac", "bg-mint"];
   return (
     <section aria-labelledby="safe-h" className="py-16 sm:py-24 lg:py-32">
@@ -157,7 +159,7 @@ export function Safety({ t }: { t: Dict["safety"] }) {
           ))}
         </ul>
         <p className="mt-6 text-center">
-          <a href={LINKS.certificates} className="group inline-flex items-center gap-2 rounded-full bg-mint px-6 py-3 font-semibold text-brand-deep transition hover:-translate-y-0.5 hover:bg-brand-grad hover:text-white">
+          <a href={pageHref("certificates", lang)} className="group inline-flex items-center gap-2 rounded-full bg-mint px-6 py-3 font-semibold text-brand-deep transition hover:-translate-y-0.5 hover:bg-brand-grad hover:text-white">
             <Icon name="check2" size={20} tone="current" /> {t.certificates}
           </a>
         </p>
@@ -170,10 +172,11 @@ export function Safety({ t }: { t: Dict["safety"] }) {
 // Shundan ko'p yangilik bo'lsa karusel, aks holda oddiy to'r (JS'siz)
 const NEWS_CAROUSEL_FROM = 4;
 
-export function News({ t }: { t: Dict["news"] }) {
+export function News({ t, lang }: { t: Dict["news"]; lang: Locale }) {
+  const blog = pageHref("blog", lang);
   // Mavjud ma'lumot manbai (lib/data NEWS) karta maydonlariga moslanadi; alohida post sahifasi yo'q —
   // avvalgidek barcha kartalar blogga olib boradi. Kategoriya maydoni yo'q → UI'da ko'rsatilmaydi.
-  const posts: NewsPost[] = t.items.map((n, i) => ({ title: n.title, excerpt: n.text, image: NEWS_IMAGES[i], href: LINKS.blog }));
+  const posts: NewsPost[] = t.items.map((n, i) => ({ title: n.title, excerpt: n.text, image: NEWS_IMAGES[i], href: blog }));
   const labels = { more: t.more, readMore: t.readMore };
   if (!posts.length) return null;
 
@@ -195,7 +198,7 @@ export function News({ t }: { t: Dict["news"] }) {
           </div>
         )}
 
-        <Link href={LINKS.blog} className={ns.allLink}>
+        <Link href={blog} className={ns.allLink}>
           {t.all}
           <span className={ns.allLinkIcon}><NewsArrowRight /></span>
         </Link>
@@ -243,12 +246,20 @@ export function Contact({ t, map }: { t: Dict["contact"]; map: Dict["map"] }) {
 }
 
 /* ───────── Footer ───────── */
-const FOOTER_HREFS = ["#top", "#about", "#services", "#reviews", "#faq", LINKS.blog, LINKS.expert, LINKS.certificates];
-
-export function Footer({ t, common, home }: { t: Dict["footer"]; common: Dict["common"]; home?: string }) {
-  // Ichki sahifalarda langarlar bosh sahifaga: "#faq" → "/ru#faq"
-  const base = home ?? "";
-  const links = FOOTER_HREFS.map((h, i) => ({ h: h.startsWith("#") ? (h === "#top" && home ? home : base + h) : h, l: t.links[i] }));
+export function Footer({ t, common, lang, home }: { t: Dict["footer"]; common: Dict["common"]; lang: Locale; home?: string }) {
+  // Har til o'z sahifalariga: /ru dagi "Блог" → /ru/blog. Ichki sahifalarda bo'limlar bosh sahifaga ("/ru#faq")
+  const onHome = !home;
+  const hrefs = [
+    onHome ? "#top" : localePath(lang),
+    sectionHref("about", lang, onHome),
+    sectionHref("services", lang, onHome),
+    sectionHref("reviews", lang, onHome),
+    sectionHref("faq", lang, onHome),
+    pageHref("blog", lang),
+    pageHref("partner", lang),
+    pageHref("certificates", lang),
+  ];
+  const links = hrefs.map((h, i) => ({ h, l: t.links[i] }));
   const socials = [
     { href: LINKS.telegram, Icon: TelegramIcon, l: "Telegram" },
     { href: LINKS.instagram, Icon: InstagramIcon, l: "Instagram" },
@@ -295,7 +306,7 @@ export function Footer({ t, common, home }: { t: Dict["footer"]; common: Dict["c
         </div>
         <div className="mt-12 flex flex-col gap-3 border-t border-white/15 pt-6 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
           <p>{fill(t.rights, { year: new Date().getFullYear() })}</p>
-          <a href={LINKS.privacy} className="hover:text-white">{t.privacy}</a>
+          <a href={pageHref("privacy", lang)} className="hover:text-white">{t.privacy}</a>
         </div>
       </div>
     </footer>

@@ -13,10 +13,7 @@ export const LINKS = {
   instagram: "https://www.instagram.com/onlayn_hamshira/",
   youtube: "https://www.youtube.com/@OnlaynHamshira",
   email: "info@onlaynhamshira.uz",
-  privacy: "https://onlaynhamshira.uz/privacy-policy",
-  certificates: "https://onlaynhamshira.uz/certificates",
-  expert: "https://onlaynhamshira.uz/expert",
-  blog: "https://onlaynhamshira.uz/blog",
+  // blog/expert/certificates/privacy — tilga bog'liq, lib/nav.ts dagi PAGES dan oling
 };
 
 export const IMAGES = {
@@ -25,8 +22,7 @@ export const IMAGES = {
   qrAndroid: "/img/misc/qr-android.png",
 };
 
-// Bo'lim langarlari — nomlari lug'atda (header.nav) shu tartibda
-export const NAV = ["#about", "#services", "#specialists", "#reviews", "#faq"];
+// Sahifa/bo'lim havolalari (har til uchun) — lib/nav.ts da
 
 export type ServiceIcon =
   | "syringe" | "droplet" | "bandage" | "gauge" | "bed" | "stethoscope" | "flask" | "hand";

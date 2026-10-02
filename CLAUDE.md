@@ -51,10 +51,21 @@ Qiymatni o'zgartirish kerak bo'lsa (marketing qarori bilan), alohida va aniq ayt
 - Kontent rasmlari `public/legacy/` da (Tilda CDN'ga bog'liq emas). og:image esa Tilda'dagi URL'da qolgan.
 - Asl Tilda ma'lumotlari: `docs/seo-baseline/` (README-SEO-MIGRATION.md — to'liq nazorat ro'yxati).
 
+## Navigatsiya (header, mobil menyu, footer)
+
+Yagona manba — `lib/nav.ts`. Havolani komponentga qo'lda yozmang (`"/blog"` kabi): har til o'z
+sahifasiga olib borishi kerak (`pageHref("blog", lang)` → `/ru/blog`). Bosh sahifa bo'limlari —
+`sectionHref()` (bosh sahifada `#faq`, boshqa sahifalarda `/ru#faq`).
+- Header: boshqa sahifaga olib boradigan havolalar ochiq turadi (`NAV_PRIMARY`), bosh sahifa
+  bo'limlariga skroll qiladiganlari "Yana" ichida (`NAV_MORE`). Bu qoidani buzmang.
+- Ichki sahifada qaysi punkt faol bo'lishi — `NAV_KEY_BY_GROUP` (routes.ts dagi `group` bo'yicha).
+
 ## Yangi sahifa qo'shilsa
 
 Mavjud URL'lar o'zgarmaydi. Yangi sahifaga o'zining title, description, canonical va H1'ini bering,
 uni `lib/seo/routes.ts` ga qo'shing (sitemap'ga shundan tushadi) va `seo:check`dan o'tkazing.
+Menyuda ko'rinishi kerak bo'lsa: `lib/nav.ts` → `PAGES` ga uch tildagi manzilini, lug'atlarga
+(`header`) nomini qo'shing va `NAV_PRIMARY` ga joylang (sahifa havolasi bo'lgani uchun).
 
 ## Ataylab qoldirilgan Tilda xatolari (marketing qarori kutilmoqda — o'zboshimchalik bilan tuzatmang)
 
