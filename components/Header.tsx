@@ -12,8 +12,10 @@ import { setScrollLock, useActiveSection } from "./Motion";
 
 const SECTION_IDS = NAV.map((h) => h.slice(1));
 
-export default function Header({ lang, t, common }: { lang: Locale; t: Dict["header"]; common: Dict["common"] }) {
-  const nav = NAV.map((href, i) => ({ href, label: t.nav[i] }));
+/** home — ichki sahifalarda bosh sahifa manzili: langarlar "/#services" ko'rinishida bosh sahifaga olib boradi */
+export default function Header({ lang, t, common, home }: { lang: Locale; t: Dict["header"]; common: Dict["common"]; home?: string }) {
+  const base = home ?? "";
+  const nav = NAV.map((href, i) => ({ href: base + href, label: t.nav[i] }));
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const active = useActiveSection(SECTION_IDS);
@@ -41,14 +43,14 @@ export default function Header({ lang, t, common }: { lang: Locale; t: Dict["hea
         }`}
       >
         <div className="mx-auto flex h-[72px] max-w-[1320px] items-center gap-6 px-4 sm:px-6">
-          <a href="#top" aria-label={t.homeLabel} className="shrink-0">
+          <a href={home ?? "#top"} aria-label={t.homeLabel} className="shrink-0">
             <Logo className="h-9 sm:h-10" />
           </a>
 
           <nav aria-label={t.mainNav} className="ml-4 hidden lg:block">
             <ul className="flex items-center gap-1">
               {nav.map((n) => {
-                const on = active === n.href.slice(1);
+                const on = !home && active === n.href.slice(1);
                 return (
                   <li key={n.href}>
                     <a

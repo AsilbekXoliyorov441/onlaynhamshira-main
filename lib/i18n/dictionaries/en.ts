@@ -2,16 +2,15 @@ import type { Dict } from "./uz";
 
 const en: Dict = {
   meta: {
-    // ⚠️ Tilda SEO bilan bir xil saqlangan — reytingga ta'sir qilmaslik uchun o'zgartirmang (docs/seo-baseline)
+    // ⚠️ Tilda <head>'idagi qiymatlar bilan AYNAN bir xil (keywords ham — Tilda uni 256 belgida kesadi).
+    // Reyting va Instagram/Telegram ulashuv ko'rinishi shunga bog'liq — o'zgartirmang (docs/seo-baseline)
     title: "Home Nurse Service App – Onlayn Hamshira | 24/7 Medical Care",
     description:
-      "Call a doctor or nurse to your home in Tashkent, Nukus, Fergana, Samarkand and Margilan. 24/7 medical help and home nursing care.",
-    ogTitle: "Onlayn Hamshira — call a nurse to your home 24/7",
-    ogDescription: "Medical care at home — fast, easy and safe!",
-    keywords: [
-      "home nurse Tashkent", "call a nurse home", "IV drip at home",
-      "injections at home", "home patient care", "nurse home visit Uzbekistan",
-    ],
+      "Need a nurse at home? Book injections, IV drips, wound care and home medical services easily via the Onlayn Hamshira app.",
+    ogTitle: "Call home nurses 24/7!",
+    ogDescription: "Medical care at your home — fast, convenient, and safe!",
+    keywords:
+      "nurse at home, home nurse services, call a nurse home, Tashkent home nurse, IV drip at home, get an IV drip at home, injections at home, get an injection at home, IV drip Tashkent, IV and injections at home, home care for the sick, elderly care at home, c",
   },
   common: {
     callNurse: "Call a nurse",
@@ -300,6 +299,14 @@ const en: Dict = {
     qr: "QR code for {p}",
     rights: "©All rights reserved {year}.",
     privacy: "Public offer and privacy policy",
+  },
+  legacy: {
+    ctaTitle: "Need medical care at home?",
+    ctaText: "A qualified nurse arrives at your home in 30–90 minutes. We work 24/7.",
+    call: "Call us",
+    home: "Home",
+    qrRedirect: "Redirecting to the app store…",
+    qrManual: "If nothing opens automatically, choose below:",
   },
   mobileCta: {
     call: "Call us",

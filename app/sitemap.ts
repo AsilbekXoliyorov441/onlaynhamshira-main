@@ -11,35 +11,27 @@ const abs = (p: string) => (p === "/" ? SITE_URL : `${SITE_URL}${p}`);
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = liveRoutes();
 
-  // Bosh sahifa klasteri (uz/ru/en) bitta kanonik yozuv + hreflang alternatlari bilan
-  const home = routes.find((r) => r.path === "/");
-  const entries: MetadataRoute.Sitemap = [];
-
-  if (home) {
-    entries.push({
-      url: abs("/"),
-      lastModified: home.lastmod,
+  // Bosh sahifa klasteri (uz/ru/en): asl Tilda sitemap'idagi kabi har biri alohida <loc>,
+  // o'zaro hreflang alternatlari bilan
+  const homeLanguages = { uz: abs("/"), ru: abs("/ru"), en: abs("/en"), "x-default": abs("/") };
+  const entries: MetadataRoute.Sitemap = routes
+    .filter((r) => r.group === "home")
+    .map((r) => ({
+      url: abs(r.path),
+      lastModified: r.lastmod,
       changeFrequency: "weekly",
       priority: 1,
-      alternates: {
-        languages: {
-          uz: abs("/"),
-          ru: abs("/ru"),
-          en: abs("/en"),
-          "x-default": abs("/"),
-        },
-      },
-    });
-  }
+      alternates: { languages: homeLanguages },
+    }));
 
   // Qolgan tayyor sahifalar (bosh sahifa klasteridan tashqari)
   for (const r of routes) {
-    if (r.path === "/" || r.path === "/ru" || r.path === "/en") continue;
+    if (r.group === "home") continue;
     entries.push({
       url: abs(r.path),
       lastModified: r.lastmod,
       changeFrequency: r.group === "blogPost" || r.group === "article" ? "monthly" : "weekly",
-      priority: r.group === "home" ? 1 : r.group.startsWith("blog") ? 0.7 : 0.6,
+      priority: r.group.startsWith("blog") ? 0.7 : 0.6,
     });
   }
 

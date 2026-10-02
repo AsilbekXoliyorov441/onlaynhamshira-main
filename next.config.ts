@@ -1,4 +1,17 @@
 import type { NextConfig } from "next";
+import { legacyRouting } from "./lib/seo/legacy";
+
+// Eski Tilda URL'lari (83 ta) — tashqi yo'l o'zgarmaydi, ichkarida app/[lang]/[...slug] ga yo'naltiriladi
+const legacy = legacyRouting();
+
+// Tilda saytining o'zidagi buzuq ichki havolalar (404 berardi) → to'g'ri sahifaga 301.
+// Yo'qolgan "link juice" qaytadi, eski havolalar ham ishlaydi (docs/seo-baseline/README 6c)
+const BROKEN_TILDA_LINKS = [
+  { source: "/politic", destination: "/hamshirapolitic" },
+  { source: "/ru/politic", destination: "/ru/politichamshira" },
+  { source: "/en/politic", destination: "/nurse-politic" },
+  { source: "/chaqaloq-parvarishi-yangi-onalar-uchun", destination: "/blog/chaqaloq-parvarishi-yangi-onalar-uchun" },
+];
 
 const nextConfig: NextConfig = {
   images: {
@@ -15,10 +28,14 @@ const nextConfig: NextConfig = {
   // Standart til (uz) prefikssiz: "/" → statik /uz sahifasi. Proxy (middleware) shart emas —
   // har bir til build vaqtida tayyor HTML, so'rov paytida kod ishlamaydi
   async rewrites() {
-    return [{ source: "/", destination: "/uz" }];
+    return [{ source: "/", destination: "/uz" }, ...legacy.rewrites];
   },
   async redirects() {
-    return [{ source: "/uz", destination: "/", permanent: true }];
+    return [
+      { source: "/uz", destination: "/", permanent: true },
+      ...legacy.redirects,
+      ...BROKEN_TILDA_LINKS.map((r) => ({ ...r, permanent: true })),
+    ];
   },
   async headers() {
     const cache = [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }];
@@ -27,6 +44,7 @@ const nextConfig: NextConfig = {
       { source: "/services/:path*", headers: cache },
       { source: "/badges/:path*", headers: cache },
       { source: "/logo-v2.svg", headers: cache },
+      { source: "/legacy/:path*", headers: cache },
     ];
   },
 };

@@ -2,15 +2,15 @@
 // Ro'yxatlar tartibi lib/data.ts dagi tuzilma bilan bir xil (rasm, narx, ikonka o'sha yerda).
 const uz = {
   meta: {
+    // ⚠️ Tilda <head>'idagi qiymatlar bilan AYNAN bir xil (keywords ham — Tilda uni 256 belgida kesadi).
+    // Reyting va Instagram/Telegram ulashuv ko'rinishi shunga bog'liq — o'zgartirmang (docs/seo-baseline)
     title: "Onlayn Hamshira - tibbiy yordam chaqirish 24/7 | Tez, qulay, xavfsiz!",
     description:
       "Toshkent, Nukus, Farg‘ona, Samarqand va Marg‘ilonda uyga shifokor va hamshira chaqiring. 24/7 tibbiy yordam va hamshiralik xizmatlari.",
-    ogTitle: "Onlayn Hamshira - tibbiy yordam chaqirish 24/7",
+    ogTitle: "Onlayn Hamshira - tibbiy yordam chaqirish 24/7 | Tez, qulay, xavfsiz!",
     ogDescription: "Tibbiy yordam uyingizda - tez, qulay, xavfsiz!",
-    keywords: [
-      "hamshira uyga chaqirish", "uyda hamshira xizmatlari", "kapelnitsa uyda",
-      "uyda ukol qilish", "uyda bemor parvarishi", "tez hamshira chaqirish",
-    ],
+    keywords:
+      "hamshira uyga chaqirish, uyda hamshira xizmatlari, Toshkent hamshira uyga, kapelnitsa uyda, uyda kapelnitsa qo'yish, uyda ukol qilish, Toshkent kapelnitsa uyda, kapelnitsa va ukol uyda, uyda bemor parvarishi, uyda qariyalar parvarishi, tez hamshira chaqir",
   },
   common: {
     callNurse: "Hamshira chaqirish",
@@ -301,6 +301,14 @@ const uz = {
     qr: "{p} QR kod",
     rights: "©Barcha huquqlar himoyalangan {year}.",
     privacy: "Ommaviy oferta va maxfiylik siyosati",
+  },
+  legacy: {
+    ctaTitle: "Uyda tibbiy yordam kerakmi?",
+    ctaText: "Malakali hamshira 30–90 daqiqada uyingizga yetib keladi. 24/7 ishlaymiz.",
+    call: "Qo‘ng‘iroq qilish",
+    home: "Bosh sahifa",
+    qrRedirect: "Ilova do‘koniga yo‘naltirilmoqda…",
+    qrManual: "Avtomatik ochilmasa, quyidan tanlang:",
   },
   mobileCta: {
     call: "Qo‘ng‘iroq qilish",

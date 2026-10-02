@@ -245,8 +245,10 @@ export function Contact({ t, map }: { t: Dict["contact"]; map: Dict["map"] }) {
 /* ───────── Footer ───────── */
 const FOOTER_HREFS = ["#top", "#about", "#services", "#reviews", "#faq", LINKS.blog, LINKS.expert, LINKS.certificates];
 
-export function Footer({ t, common }: { t: Dict["footer"]; common: Dict["common"] }) {
-  const links = FOOTER_HREFS.map((h, i) => ({ h, l: t.links[i] }));
+export function Footer({ t, common, home }: { t: Dict["footer"]; common: Dict["common"]; home?: string }) {
+  // Ichki sahifalarda langarlar bosh sahifaga: "#faq" → "/ru#faq"
+  const base = home ?? "";
+  const links = FOOTER_HREFS.map((h, i) => ({ h: h.startsWith("#") ? (h === "#top" && home ? home : base + h) : h, l: t.links[i] }));
   const socials = [
     { href: LINKS.telegram, Icon: TelegramIcon, l: "Telegram" },
     { href: LINKS.instagram, Icon: InstagramIcon, l: "Instagram" },

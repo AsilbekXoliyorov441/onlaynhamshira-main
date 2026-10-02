@@ -55,11 +55,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+// Har sahifada (Tilda'dagi kabi). Tilda'dagi barcha maydonlar (description, sameAs) saqlangan + manzil/ish vaqti
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "MedicalBusiness",
   name: "Onlayn Hamshira",
-  url: "https://onlaynhamshira.uz",
+  url: "https://onlaynhamshira.uz/",
+  description: "24/7 tibbiy yordam, shifokor va hamshira xizmatlari uyda.",
   telephone: "+998781139616",
   email: "info@onlaynhamshira.uz",
   openingHours: "Mo-Su 00:00-24:00",
@@ -71,6 +73,11 @@ const jsonLd = {
     addressCountry: "UZ",
   },
   areaServed: ["Toshkent", "Samarqand", "Farg‘ona", "Namangan", "Nukus", "Marg‘ilon"],
+  sameAs: [
+    "https://www.youtube.com/@OnlaynHamshira",
+    "https://t.me/Onlayn_Hamshira_Admin",
+    "https://www.instagram.com/onlayn_hamshira/",
+  ],
 };
 
 // html.js — reveal animatsiyalari uchun. html.cv-off — anchorga o'tishda content-visibility o'chadi

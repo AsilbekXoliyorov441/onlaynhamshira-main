@@ -183,3 +183,60 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ── Eski Tilda maqolalari (app/[lang]/[...slug]) — tozalangan HTML uchun tipografiya ──
+   Kontent content/legacy/*.json da; Tilda'ning turli bloklaridagi klasslar shu yerda umumiy ko'rinishga keltiriladi */
+.legacy-prose { font-size: 17px; line-height: 1.7; color: var(--color-ink); overflow-wrap: anywhere; }
+.legacy-prose > * + * { margin-top: 1rem; }
+.legacy-prose :is(h1, h2, h3, h4) { font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; text-wrap: balance; }
+.legacy-prose h1 { font-size: clamp(28px, 5vw, 44px); margin-bottom: 1.25rem; }
+.legacy-prose h2 { font-size: clamp(22px, 3.4vw, 30px); margin-top: 2.25rem; }
+.legacy-prose h3 { font-size: clamp(19px, 2.6vw, 23px); margin-top: 1.75rem; }
+.legacy-prose h4 { font-size: 18px; margin-top: 1.5rem; }
+.legacy-prose :is(h1, h2, h3, h4) strong { font-weight: inherit; }
+.legacy-prose :is(p, li, div) { margin-block: 0.6rem; }
+.legacy-prose ul { list-style: disc; padding-left: 1.4rem; }
+.legacy-prose ol { list-style: decimal; padding-left: 1.4rem; }
+.legacy-prose li { margin-block: 0.35rem; }
+.legacy-prose li::marker { color: var(--color-brand-deep); }
+.legacy-prose a { color: var(--color-sky-deep); text-decoration: underline; text-underline-offset: 3px; }
+.legacy-prose a:hover { color: var(--color-brand-deep); }
+.legacy-prose img { display: block; max-width: 100%; height: auto; border-radius: 20px; margin-inline: auto; }
+.legacy-prose figure { margin-block: 1.5rem; }
+.legacy-prose figure.cover img { width: 100%; max-height: 520px; object-fit: cover; }
+.legacy-prose iframe { width: 100%; aspect-ratio: 16 / 9; height: auto; border: 0; border-radius: 20px; }
+.legacy-prose table { width: 100%; border-collapse: collapse; font-size: 15px; display: block; overflow-x: auto; }
+.legacy-prose :is(th, td) { border: 1px solid var(--color-line); padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+.legacy-prose th { background: var(--color-mist); }
+.legacy-prose hr { border: 0; border-top: 1px solid var(--color-line); margin-block: 2rem; }
+
+/* Zero-blok jadvallari (Tilda'da absolyut joylashgan qatorlar) */
+.legacy-prose .zrow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin: 0; padding: 0.65rem 0.25rem; border-bottom: 1px solid var(--color-line); font-size: 15px; }
+.legacy-prose .zrow.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.legacy-prose .zrow.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.legacy-prose .zcell { margin: 0; }
+.legacy-prose .zcell > :first-child { margin-top: 0; }
+.legacy-prose .zbtn a { display: inline-block; border-radius: 999px; background: var(--color-ink); color: #fff; padding: 0.7rem 1.4rem; font-weight: 600; text-decoration: none; }
+.legacy-prose .zbtn a:hover { background: var(--color-brand-deep); color: #fff; }
+.legacy-prose .zimg img { max-height: 560px; width: auto; }
+
+/* Maqolalardagi maxsus bloklar (HTML-kod bloklaridagi klasslar) */
+.legacy-prose :is(.highlight, .highlight-box, .info, .info-box, .notice, .quote, .oh-intro, .preamble-card, .toc-card, .seo-alert-card) {
+  background: #eef8fd; border-left: 4px solid var(--color-sky-deep); border-radius: 14px; padding: 1rem 1.25rem;
+}
+.legacy-prose :is(.warning, .warning-box, .warn, .emergency-alert, .oh-warning) {
+  background: #fff4f4; border-left: 4px solid var(--color-alert); border-radius: 14px; padding: 1rem 1.25rem;
+}
+.legacy-prose :is(.cta, .cta-box, .oh-cta, .seo-cta-banner, .tilda-cta-banner, .tilda-promo-card) {
+  display: block; background: var(--color-mint); border-radius: 20px; padding: 1.25rem 1.5rem; text-decoration: none; color: var(--color-ink);
+}
+.legacy-prose :is(.seo-faq-card, .section) { border: 1px solid var(--color-line); border-radius: 16px; padding: 0.75rem 1.25rem; }
+.legacy-prose :is(.seo-faq-q, .section-title) { font-weight: 700; }
+.legacy-prose .clause { display: flex; gap: 0.6rem; }
+.legacy-prose .clause-num { flex: none; font-weight: 600; color: var(--color-ink-soft); }
+.legacy-prose :is(.section-num, .toc-num) { font-weight: 700; color: var(--color-brand-deep); margin-right: 0.4rem; }
+.legacy-prose .back-top { display: none; }
+@media (max-width: 639.98px) {
+  .legacy-prose { font-size: 16px; }
+  .legacy-prose .zrow { font-size: 14px; gap: 0.5rem; }
+}
