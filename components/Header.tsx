@@ -25,12 +25,15 @@ export default function Header({
   common,
   home,
   current,
+  alternates,
 }: {
   lang: Locale;
   t: Dict["header"];
   common: Dict["common"];
   home?: string;
   current?: NavKey;
+  /** Sahifaning boshqa tillardagi manzillari (til almashtirgich uchun) */
+  alternates?: Record<Locale, string>;
 }) {
   const onHome = !home;
   const labels: Record<NavKey, string> = {
@@ -97,7 +100,7 @@ export default function Header({
           </nav>
 
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-            <LangSwitch lang={lang} label={common.languages} />
+            <LangSwitch lang={lang} label={common.languages} hrefs={alternates} />
             <a
               href={`tel:${LINKS.phone}`}
               className="hidden items-center gap-2 rounded-full px-4 py-2.5 text-[15px] font-semibold whitespace-nowrap transition hover:bg-mist md:inline-flex lg:hidden xl:inline-flex"

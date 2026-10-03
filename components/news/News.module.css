@@ -166,14 +166,15 @@
 .media {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  /* Blog muqovalari gorizontal fotosuratlar — blog kartalaridagidek to'liq to'ldiradi */
+  aspect-ratio: 4 / 3;
   border-radius: 23px;
   overflow: hidden;
-  background: #fff;
+  background: var(--color-mist);
   flex: none;
 }
 .media img {
-  object-fit: contain;
+  object-fit: cover;
 }
 .body {
   display: flex;

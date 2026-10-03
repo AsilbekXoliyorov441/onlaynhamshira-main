@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { legacyRouting } from "./lib/seo/legacy";
+import { TILDA_PAGE_IDS } from "./lib/seo/tilda-page-ids";
 
 // Eski Tilda URL'lari (83 ta) — tashqi yo'l o'zgarmaydi, ichkarida app/[lang]/[...slug] ga yo'naltiriladi
 const legacy = legacyRouting();
@@ -35,6 +36,8 @@ const nextConfig: NextConfig = {
       { source: "/uz", destination: "/", permanent: true },
       ...legacy.redirects,
       ...BROKEN_TILDA_LINKS.map((r) => ({ ...r, permanent: true })),
+      // Tilda'ning /page{ID}.html manzillari → asl sahifa
+      ...Object.entries(TILDA_PAGE_IDS).map(([id, destination]) => ({ source: `/page${id}.html`, destination, permanent: true })),
     ];
   },
   async headers() {

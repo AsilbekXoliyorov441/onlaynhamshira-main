@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { ArrowUpRight, Clock3 } from "lucide-react";
-import { BLOG_TOPICS, type BlogEntry, type BlogTopic } from "@/lib/blog-shared";
+import { BLOG_TOPICS, formatDate, type BlogEntry, type BlogTopic } from "@/lib/blog-shared";
 import { fill } from "@/lib/i18n/format";
 import type { Dict } from "@/lib/i18n/dictionaries/uz";
 import { BlogCard } from "./BlogCard";
 import { Cover } from "./Cover";
 
-type T = Pick<Dict["blog"], "minutes" | "read" | "topics" | "featured" | "filterLabel" | "all" | "allPosts">;
+type T = Pick<Dict["blog"], "minutes" | "read" | "topics" | "featured" | "filterLabel" | "all" | "allPosts" | "byline">;
 
 /**
  * Mavzu filtri + kartalar. Barcha kartalar serverda HTML'ga render bo'ladi (havolalar qidiruv tizimiga ko'rinadi),
@@ -91,8 +91,12 @@ function Featured({ e, t }: { e: BlogEntry; t: T }) {
         <h2 className="relative mt-5 text-[clamp(24px,6vw,34px)] leading-[1.12] font-semibold tracking-[-0.02em] text-balance">{e.title}</h2>
         <p className="relative mt-4 line-clamp-4 leading-relaxed text-white/75">{e.excerpt}</p>
         <div className="relative mt-auto flex items-center justify-between gap-4 pt-8">
-          <span className="inline-flex items-center gap-1.5 text-sm text-white/70">
-            <Clock3 className="size-4" aria-hidden /> {fill(t.minutes, { n: e.minutes })}
+          <span className="flex flex-col gap-1 text-sm text-white/70">
+            <span className="font-medium text-white">{t.byline}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock3 className="size-4" aria-hidden />
+              {e.updated && <time dateTime={e.updated}>{formatDate(e.updated, e.lang)} ·</time>} {fill(t.minutes, { n: e.minutes })}
+            </span>
           </span>
           <span aria-hidden className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-semibold text-ink transition group-hover:bg-brand-grad group-hover:text-white">
             {t.read} <ArrowUpRight className="size-4 transition-transform group-hover:rotate-45" />

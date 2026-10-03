@@ -21,6 +21,14 @@ export type NavKey = SectionKey | PageKey;
 
 export const pageHref = (key: PageKey, lang: Locale) => PAGES[key][lang];
 
+/**
+ * Til almashtirgich uchun: sahifaning boshqa tillardagi rasmiy (Tilda/SEO) manzillari.
+ * Masalan "/onlayn-hamshira-vs-ananaviy" → en "/online-nursing-vs-traditional". Juftligi yo'q sahifa — undefined
+ * (til almashtirgich bosh sahifaga olib boradi). <head>dagi hreflang'ga tegilmaydi.
+ */
+export const pageAlternates = (path: string): Record<Locale, string> | undefined =>
+  Object.values(PAGES).find((p) => Object.values(p).includes(path));
+
 /** Bosh sahifa bo'limi: bosh sahifaning o'zida "#faq", boshqa sahifalarda "/ru#faq" */
 export const sectionHref = (id: SectionKey, lang: Locale, onHome: boolean) =>
   onHome ? `#${id}` : `${localePath(lang)}#${id}`;

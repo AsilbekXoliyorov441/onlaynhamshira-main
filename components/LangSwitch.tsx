@@ -3,9 +3,12 @@ import { LOCALES, LOCALE_NAMES, localePath, type Locale } from "@/lib/i18n/confi
 /**
  * Til almashtirgich: oddiy havolalar (JS'siz ishlaydi). Har bir til — alohida statik sahifa,
  * shuning uchun almashtirish to'liq yangi HTML yuklaydi: <html lang>, shrift va metadata to'g'ri bo'ladi.
+ * hrefs — sahifaning boshqa tillardagi rasmiy manzillari (lib/nav → pageAlternates); bo'lmasa bosh sahifa.
  * Ko'rinadigan matn "UZ", ekran o'quvchi uchun to'liq nom — o'sha tilning talaffuzi bilan (lang).
  */
-export function LangSwitch({ lang, label, className = "" }: { lang: Locale; label: string; className?: string }) {
+export function LangSwitch({
+  lang, label, hrefs, className = "",
+}: { lang: Locale; label: string; hrefs?: Record<Locale, string>; className?: string }) {
   return (
     <nav aria-label={label} className={className}>
       <ul className="flex items-center rounded-full bg-mist p-1 ring-1 ring-line">
@@ -14,7 +17,7 @@ export function LangSwitch({ lang, label, className = "" }: { lang: Locale; labe
           return (
             <li key={l}>
               <a
-                href={localePath(l)}
+                href={hrefs?.[l] ?? localePath(l)}
                 hrefLang={l}
                 lang={l}
                 aria-current={on ? "true" : undefined}

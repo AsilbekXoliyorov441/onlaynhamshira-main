@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, Lock } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ClipboardCheck, FileCheck2, Lock, Save, ShieldCheck } from "lucide-react";
 import { EXPERT_LINKS } from "@/lib/expert";
 import { pageHref } from "@/lib/nav";
 import type { Locale } from "@/lib/i18n/config";
@@ -59,41 +59,85 @@ export function JoinBanner({ t, lang }: { t: Dict["join"]; lang: Locale }) {
           href={EXPERT_LINKS.hrApply}
           rel="noopener"
           aria-label={`${t.browserLabel}: hr.onlaynhamshira.uz`}
-          className="group mx-auto hidden w-full max-w-[440px] rotate-[1.5deg] sm:block rounded-[22px] bg-white p-2 text-ink shadow-[0_40px_70px_-30px_rgb(0_0_0/0.6)] transition duration-500 hover:rotate-0"
+          className="group relative mx-auto hidden w-full max-w-[440px] sm:block"
         >
-          <div className="flex items-center gap-3 rounded-t-[16px] bg-mist px-3 py-2.5">
-            <span aria-hidden className="flex gap-1.5">
-              <span className="size-2.5 rounded-full bg-[#ff6b6b]" />
-              <span className="size-2.5 rounded-full bg-[#ffd166]" />
-              <span className="size-2.5 rounded-full bg-[#06d6a0]" />
-            </span>
-            <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[13px] ring-1 ring-line">
-              <Lock className="size-3.5 shrink-0 text-brand-deep" aria-hidden />
-              <span className="truncate"><strong className="font-semibold">hr.onlaynhamshira.uz</strong><span className="text-ink-soft">/hamkor</span></span>
-            </span>
-          </div>
-          <div aria-hidden className="px-4 pt-5 pb-5 sm:px-5">
-            {/* Onboarding bosqichlari */}
-            <div className="flex gap-1">
-              {Array.from({ length: HR_STEPS }, (_, i) => (
-                <span key={i} className={`h-1.5 flex-1 rounded-full ${i < 2 ? "bg-brand-grad" : "bg-line"}`} />
-              ))}
+          <div className="overflow-hidden rounded-[20px] bg-white text-ink shadow-[0_40px_80px_-32px_rgb(0_0_0/0.65)] ring-1 ring-black/5 transition duration-500 group-hover:-translate-y-1">
+            {/* Brauzer paneli */}
+            <div className="flex items-center gap-3 border-b border-line bg-mist/70 px-3.5 py-2.5">
+              <span aria-hidden className="flex gap-1.5">
+                <span className="size-2.5 rounded-full bg-ink/15" />
+                <span className="size-2.5 rounded-full bg-ink/15" />
+                <span className="size-2.5 rounded-full bg-ink/15" />
+              </span>
+              <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-[13px] ring-1 ring-line">
+                <Lock className="size-3.5 shrink-0 text-brand-deep" aria-hidden />
+                <span className="truncate"><strong className="font-semibold">hr.onlaynhamshira.uz</strong><span className="text-ink-soft">/hamkor</span></span>
+              </span>
             </div>
-            <div className="mt-5 flex items-center gap-3">
-              <img src="/img/map-pin.svg" alt="" width={34} height={42} className="h-10 w-auto" />
-              <div className="flex-1 space-y-2">
-                <span className="block h-3 w-3/4 rounded-full bg-ink/80" />
-                <span className="block h-2.5 w-1/2 rounded-full bg-line" />
+
+            <div aria-hidden className="px-5 pt-4 pb-5">
+              {/* Sarlavha + bosqich */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-[13px] font-semibold">
+                  <img src="/img/map-pin.svg" alt="" width={34} height={42} className="h-6 w-auto" />
+                  {t.mock.brand}
+                </span>
+                <span className="rounded-md bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand-deep tabular-nums">{t.mock.step}</span>
+              </div>
+              <div className="mt-3 flex gap-1">
+                {Array.from({ length: HR_STEPS }, (_, i) => (
+                  <span key={i} className={`h-1 flex-1 rounded-full ${i < 2 ? "bg-brand-grad" : "bg-line"}`} />
+                ))}
+              </div>
+
+              <p className="mt-4 text-[17px] font-bold tracking-[-0.01em]">{t.mock.title}</p>
+
+              {/* Mutaxassislik */}
+              <p className="mt-3 text-[11px] font-semibold tracking-wide text-ink-soft uppercase">{t.mock.specialty}</p>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {t.mock.specialties.map((sp, i) => (
+                  <span
+                    key={sp}
+                    className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[13px] font-medium ring-1 ${
+                      i === 0 ? "bg-brand/8 text-brand-deep ring-brand/50" : "text-ink-soft ring-line"
+                    }`}
+                  >
+                    {i === 0 && <Check className="size-3.5" />}
+                    {sp}
+                  </span>
+                ))}
+              </div>
+
+              {/* Tajriba */}
+              <p className="mt-3 text-[11px] font-semibold tracking-wide text-ink-soft uppercase">{t.mock.experience}</p>
+              <span className="mt-1.5 flex items-center justify-between rounded-lg px-3 py-2 text-[13px] font-medium ring-1 ring-line">
+                {t.mock.experienceValue}
+                <ChevronDown className="size-4 text-ink-soft" />
+              </span>
+
+              {/* Hujjatlar */}
+              <p className="mt-3 text-[11px] font-semibold tracking-wide text-ink-soft uppercase">{t.mock.docs}</p>
+              <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+                {t.mock.docsValue.map((d) => (
+                  <span key={d} className="flex items-center gap-2 rounded-lg bg-mist px-3 py-2 text-[13px] font-medium">
+                    <FileCheck2 className="size-4 text-brand-deep" />
+                    {d}
+                    <span className="ml-auto grid size-4 place-items-center rounded-full bg-brand-deep text-white">
+                      <Check className="size-3" strokeWidth={3} />
+                    </span>
+                  </span>
+                ))}
+              </div>
+
+              <span className="mt-4 flex h-11 items-center justify-center gap-2 rounded-xl bg-brand-grad text-sm font-semibold text-white transition group-hover:brightness-105">
+                {t.mock.next} <ArrowRight className="size-4" />
+              </span>
+
+              <div className="mt-3 flex items-center justify-between gap-2 text-[11.5px] text-ink-soft">
+                <span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-brand-deep" />{t.mock.secure}</span>
+                <span className="flex items-center gap-1.5"><Save className="size-3.5" />{t.mock.resume}</span>
               </div>
             </div>
-            <div className="mt-5 space-y-2">
-              <span className="block h-2.5 w-full rounded-full bg-line" />
-              <span className="block h-2.5 w-11/12 rounded-full bg-line" />
-              <span className="block h-2.5 w-4/5 rounded-full bg-line" />
-            </div>
-            <span className="mt-6 flex h-11 items-center justify-center gap-2 rounded-xl bg-brand-grad text-sm font-semibold text-white transition group-hover:brightness-105">
-              {t.apply} <ArrowRight className="size-4" />
-            </span>
           </div>
         </a>
       </div>

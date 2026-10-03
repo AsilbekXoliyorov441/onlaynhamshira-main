@@ -7,8 +7,8 @@ import { MobileCTA } from "@/components/MobileCTA";
 import { LegacyCta, QrRedirect } from "@/components/LegacyPage";
 import { OG_LOCALE, hasLocale, localePath } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { NAV_KEY_BY_GROUP, pageAlternates, pageHref } from "@/lib/nav";
 import { findLegacyPage, legacyPages, slugOf } from "@/lib/seo/legacy";
-import { NAV_KEY_BY_GROUP } from "@/lib/nav";
 import { EXPERT } from "@/lib/expert";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/site";
 import { isArticle } from "@/lib/blog";
@@ -123,7 +123,7 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-white">
         {t.common.skipToContent}
       </a>
-      <Header lang={lang} t={t.header} common={t.common} home={home} current={NAV_KEY_BY_GROUP[pg.group]} />
+      <Header lang={lang} t={t.header} common={t.common} home={home} current={NAV_KEY_BY_GROUP[pg.group]} alternates={pageAlternates(pg.path)} />
       {pg.group === "expert" ? (
         // Hamkor sahifasi — Tilda HTML o'rniga alohida dizayn (matnlar lib/expert.ts da, metadata JSON'da)
         <main id="main">
@@ -132,7 +132,18 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
       ) : pg.group === "compare" ? (
         // "Nega biz?" — taqqoslash sahifasi (matnlar lib/why.ts da, metadata/JSON-LD JSON'da)
         <main id="main">
-          <WhyPage t={WHY[pg.contentLang]} html={pg.html} callLabel={t.mobileCta.call} />
+          <WhyPage
+            t={WHY[pg.contentLang]}
+            callLabel={t.mobileCta.call}
+            stats={t.stats.items}
+            org={{
+              company: t.certificates.company,
+              tinLabel: t.certificates.facts.tin,
+              sinceLabel: t.certificates.facts.since,
+              docsLabel: t.blog.docsLink,
+              docsHref: pageHref("certificates", pg.contentLang),
+            }}
+          />
         </main>
       ) : pg.group === "app" ? (
         <main id="main">
@@ -149,15 +160,19 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
       ) : blog ? (
         // Blog muqova/LCP rasmini o'zi oldindan yuklaydi (components/blog/BlogPages.tsx)
         <main id="main" className="pt-[calc(80px+env(safe-area-inset-top))]">
-          {blog === "index" ? <BlogIndexPage pg={pg} t={t} /> : <BlogPostPage pg={pg} t={t} lang={lang} />}
+          {blog === "index" ? <BlogIndexPage pg={pg} t={t} lang={lang} /> : <BlogPostPage pg={pg} t={t} lang={lang} />}
+        </main>
+      ) : pg.group === "certificates" ? (
+        // Sertifikatlar — boshqa yangi sahifalar bilan bir xil konteyner (hero 1400px, kontent 1320px)
+        <main id="main">
+          <CertificatesPage html={pg.html} t={t.certificates} home={home} homeLabel={t.legacy.home} closeLabel={t.common.close} />
+          <div className="px-4 sm:px-6">
+            <LegacyCta t={t.legacy} cta={t.common.callNurse} />
+          </div>
         </main>
       ) : (
         <main id="main" className="px-4 pt-[calc(72px+env(safe-area-inset-top))] sm:px-6">
-          {pg.group === "certificates" ? (
-          <CertificatesPage html={pg.html} t={t.certificates} home={home} homeLabel={t.legacy.home} closeLabel={t.common.close} />
-        ) : (
           <article className="legacy-prose mx-auto max-w-[860px] py-10 sm:py-14" dangerouslySetInnerHTML={{ __html: pg.html }} />
-        )}
           <LegacyCta t={t.legacy} cta={t.common.callNurse} />
         </main>
       )}

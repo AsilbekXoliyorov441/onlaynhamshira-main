@@ -4,8 +4,9 @@
 // va mavzu ajratiladi. ⚠️ <head> metadata, JSON-LD va URL'lar o'zgarmaydi — faqat sahifa tanasi.
 
 import { legacyPages, type LegacyPage } from "@/lib/seo/legacy";
+import { LEGACY_ROUTES } from "@/lib/seo/routes";
 
-export { BLOG_TOPICS } from "./blog-shared";
+export { BLOG_TOPICS, formatDate } from "./blog-shared";
 export type { BlogEntry, BlogImage, BlogTopic, TocItem } from "./blog-shared";
 import type { BlogEntry, BlogImage, BlogTopic, TocItem } from "./blog-shared";
 
@@ -105,6 +106,7 @@ export function parseArticle(pg: LegacyPage): Parsed {
     cover,
     topic: topicOf(pg),
     minutes: minutesOf(pg.html),
+    updated: LEGACY_ROUTES.find((r) => r.path === pg.path)?.lastmod,
   };
   const res = { title, cover, body: html, toc, entry };
   parsedCache.set(pg.path, res);
@@ -135,6 +137,15 @@ export function blogEntries(index: LegacyPage): BlogEntry[] {
   }
   for (const pg of legacyPages()) if (pg.group === "blogPost") add(pg);
   return out;
+}
+
+/**
+ * Bosh sahifadagi "Yangiliklar": shu tildagi blog sahifasi bilan aynan bir xil ro'yxat va tartib (yagona manba) —
+ * bosh sahifadagi har bir karta blogda ham bor va o'z maqolasiga olib boradi.
+ */
+export function homeNewsEntries(lang: string, n = 6): BlogEntry[] {
+  const index = legacyPages().find((p) => p.group === "blogIndex" && p.contentLang === lang);
+  return index ? blogEntries(index).filter((e) => e.cover).slice(0, n) : [];
 }
 
 /** Maqola ostidagi "o'xshash maqolalar": shu til, avval shu mavzu */

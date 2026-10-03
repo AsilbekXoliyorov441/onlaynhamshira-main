@@ -79,8 +79,6 @@ const img = (path: string) => `/img/${path}`;
 
 export const REVIEW_IMAGES = ["01", "03", "04", "02", "06", "10", "08"].map((n) => img(`avatars/${n}.webp`));
 
-export const NEWS_IMAGES = ["travmatolog", "ramazon", "roza"].map((n) => img(`news/${n}.webp`));
-
 /**
  * Sertifikatlar sahifasi (/certificates). Tartib content/legacy/*certificates.json dagi rasmlar va
  * lug'atlardagi `certificates.items` bilan bir xil. verify — hujjatdagi QR kodning o'zi olib boradigan

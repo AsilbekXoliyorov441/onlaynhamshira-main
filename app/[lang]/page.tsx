@@ -5,6 +5,7 @@ import Stats from "@/components/Stats";
 import Services from "@/components/Services";
 import ServiceBento from "@/components/ServiceBento";
 import { AppBand, Benefits, Contact, Footer, News, Safety } from "@/components/Sections";
+import { homeNewsEntries } from "@/lib/blog";
 import HowItWorks from "@/components/how-it-works/HowItWorks";
 import { Faq, Reviews, Specialists } from "@/components/Interactive";
 import { MobileCTA } from "@/components/MobileCTA";
@@ -36,7 +37,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <JoinBanner t={t.join} lang={lang} />
         </Specialists>
         <Reviews t={t.reviews} stars={common.fiveStars} />
-        <News t={t.news} lang={lang} />
+        <News t={t.news} topics={t.blog.topics} entries={homeNewsEntries(lang)} lang={lang} />
         <Faq t={t.faq} />
         <div className="h-3" />
         <Contact t={t.contact} map={t.map} />

@@ -13,7 +13,7 @@ export function ContactMap({ t, address, className = "" }: { t: Dict["map"]; add
   const ref = useRef<HTMLDivElement>(null);
   const [load, setLoad] = useState(false);
 
-  // maplibre og'ir (~800KB, asosiy oqimda bir necha soniya): ekranga yaqin bo'lsa HAM foydalanuvchi
+  // Yandex Maps API og'ir (bir necha yuz KB + uchinchi tomon cookie): ekranga yaqin bo'lsa HAM foydalanuvchi
   // sahifa bilan harakat qilgan bo'lsa (teginish/skroll/sichqoncha) yuklanadi. Xarita ekranning tepasida
   // turgan sahifalarda (/contacts) birinchi chizish va interaktivlikni bloklamaydi.
   useEffect(() => {

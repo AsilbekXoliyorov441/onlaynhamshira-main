@@ -17,6 +17,10 @@ export type WhyDict = {
   toCompare: string;
   chipVerified: string;
   chipFast: string;
+  /** Hero'dagi qisqa taqqoslash kartasi sarlavhasi */
+  keyDiff: string;
+  /** Mobil: qolgan taqqoslash qatorlarini ochish, {n} — soni */
+  showMore: string;
   compareTitle: string;
   compareCaption: string;
   cols: { feature: string; us: string; old: string };
@@ -46,6 +50,8 @@ const uz: WhyDict = {
   toCompare: "Taqqoslashni ko‘rish",
   chipVerified: "Tekshirilgan mutaxassislar",
   chipFast: "Bir necha daqiqada",
+  keyDiff: "Asosiy farqlar",
+  showMore: "Yana {n} ta mezonni ko‘rish",
   compareTitle: "Nega OnlaynHamshira.uz an'anaviy usullardan yaxshiroq",
   compareCaption: "Taqqoslash",
   cols: { feature: "Xususiyat", us: "OnlaynHamshira.uz", old: "Eski / Offline usullar" },
@@ -102,6 +108,8 @@ const ru: WhyDict = {
   toCompare: "Смотреть сравнение",
   chipVerified: "Проверенные специалисты",
   chipFast: "Заказ за минуты",
+  keyDiff: "Ключевые отличия",
+  showMore: "Показать ещё {n} критериев",
   compareTitle: "Почему выбирают OnlaynHamshira.uz вместо традиционного поиска медицинского персонала",
   compareCaption: "Быстрое сравнение",
   cols: { feature: "Параметр", us: "OnlaynHamshira.uz", old: "Старые/офлайн способы" },
@@ -157,6 +165,8 @@ const en: WhyDict = {
   toCompare: "See the comparison",
   chipVerified: "Verified specialists",
   chipFast: "Booked in minutes",
+  keyDiff: "Key differences",
+  showMore: "Show {n} more criteria",
   compareTitle: "Why Choose OnlaynHamshira.uz vs Traditional Nursing Services",
   compareCaption: "Quick comparison",
   cols: { feature: "Feature / Benefit", us: "OnlaynHamshira.uz", old: "Old / Offline / Random Search" },

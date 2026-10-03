@@ -1,14 +1,14 @@
 import { preload } from "react-dom";
-import { ArrowLeft, ArrowRight, ChevronRight, Clock3, Phone } from "lucide-react";
-import { LINKS } from "@/lib/data";
-import { blogEntries, parseArticle, relatedEntries, type BlogImage } from "@/lib/blog";
+import { ArrowLeft, ArrowRight, BadgeCheck, CalendarCheck, ChevronRight, Clock3, Phone, ShieldCheck, Siren, Stethoscope } from "lucide-react";
+import { LINKS, STATS } from "@/lib/data";
+import { blogEntries, formatDate, parseArticle, relatedEntries, type BlogImage } from "@/lib/blog";
 import { fill } from "@/lib/i18n/format";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Dict } from "@/lib/i18n/dictionaries/uz";
 import { pageHref } from "@/lib/nav";
 import { SITE_URL } from "@/lib/seo/site";
 import type { LegacyPage } from "@/lib/seo/legacy";
-import { Icon, IconTile } from "../Icon";
+import { IconTile } from "../Icon";
 import { LegacyCta } from "../LegacyPage";
 import { BlogCard } from "./BlogCard";
 import { BlogIndex } from "./BlogIndex";
@@ -23,13 +23,18 @@ const preloadImage = (img: BlogImage | null, sizes: string) => {
   if (img) preload(img.src, { as: "image", fetchPriority: "high", imageSrcSet: img.srcSet, imageSizes: sizes });
 };
 
+const PRINCIPLE_ICONS = [Stethoscope, ShieldCheck, BadgeCheck];
+/** 13500 → "13 500" (bosh sahifadagi hisoblagich bilan bir xil ko'rinish) */
+const num = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
+
 const FEATURED_SIZES = "(min-width: 1024px) 720px, calc(100vw - 32px)";
 const COVER_SIZES = "(min-width: 1248px) 1200px, calc(100vw - 32px)";
 
 /* ───────── /blog ───────── */
-export function BlogIndexPage({ pg, t }: { pg: LegacyPage; t: Dict }) {
+export function BlogIndexPage({ pg, t, lang }: { pg: LegacyPage; t: Dict; lang: Locale }) {
   const b = t.blog;
   const entries = blogEntries(pg);
+  const lastUpdate = entries.reduce<string | undefined>((m, e) => (e.updated && (!m || e.updated > m) ? e.updated : m), undefined);
   // H1 matni Tilda'dagidek ("Yangiliklar" / "Новости" / "News")
   const h1 = pg.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]+>/g, "").trim() ?? b.label;
   preloadImage(entries[0]?.cover ?? null, FEATURED_SIZES);
@@ -42,31 +47,69 @@ export function BlogIndexPage({ pg, t }: { pg: LegacyPage; t: Dict }) {
           <div aria-hidden className="pointer-events-none absolute -right-24 -bottom-32 size-[440px] rounded-full bg-brand-blue/25 blur-[110px]" />
           <div className="dots pointer-events-none absolute inset-0 opacity-70" />
 
-          <div className="relative grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
+          <div className="relative grid items-center gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-14">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3.5 py-1.5 text-sm font-semibold text-brand-deep ring-1 ring-white backdrop-blur">
                 <span className="size-1.5 rounded-full bg-brand-deep" /> {b.label}
               </p>
               <h1 className="mt-5 text-[clamp(38px,9vw,72px)] leading-[1] font-bold tracking-[-0.035em]">{h1}</h1>
               <p className="mt-5 max-w-[52ch] text-lg leading-relaxed text-ink-soft sm:text-xl">{b.lead}</p>
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/70 py-2 pr-4 pl-2.5 text-sm font-medium ring-1 ring-white backdrop-blur">
-                <Icon name="check2" size={18} /> {fill(b.count, { n: entries.length })}
-              </p>
+
+              {/* Raqamlar: bosh sahifadagi bilan bir xil manba (lib/data.ts → STATS) */}
+              <dl className="mt-8 grid max-w-[560px] grid-cols-3 divide-x divide-ink/10 rounded-2xl bg-white/70 py-4 ring-1 ring-white backdrop-blur">
+                {[
+                  { v: `${num(STATS[0].value)}${STATS[0].suffix}`, l: t.stats.items[0] },
+                  { v: `${num(STATS[2].value)}${STATS[2].suffix}`, l: t.stats.items[2] },
+                  { v: String(entries.length), l: b.articles },
+                ].map((s) => (
+                  <div key={s.l} className="flex flex-col-reverse justify-end gap-1.5 px-3 sm:px-5">
+                    <dt className="text-[12px] leading-snug text-ink-soft hyphens-auto [overflow-wrap:anywhere] sm:text-[13px]">{s.l}</dt>
+                    <dd className="text-[clamp(20px,5vw,28px)] leading-none font-bold tracking-tight tabular-nums">{s.v}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-            {/* Bezak: mavzular plitkalari */}
-            <div aria-hidden className="relative hidden h-[260px] lg:block">
-              {(["nurse", "family", "pressure", "prevention"] as const).map((k, i) => (
-                <div
-                  key={k}
-                  className={`absolute flex items-center gap-3 rounded-2xl bg-white/90 py-2.5 pr-5 pl-2.5 shadow-[0_18px_40px_-20px_rgb(16_41_58/0.45)] backdrop-blur ${
-                    ["top-0 left-[8%] animate-float", "top-[28%] right-0 animate-float-slow", "bottom-[22%] left-0 animate-float-slow", "right-[12%] bottom-0 animate-float"][i]
-                  }`}
-                >
-                  <IconTile name={TOPIC_STYLE[k].icon} size={44} className="rounded-xl!" />
-                  <span className="font-semibold">{b.topics[k]}</span>
+
+            {/* Tahririyat tamoyillari — maqolalar kim tomonidan va qanday tayyorlanadi */}
+            <aside aria-labelledby="principles-h" className="rounded-[28px] bg-white p-6 shadow-[0_30px_60px_-34px_rgb(16_41_58/0.45)] ring-1 ring-white sm:p-7">
+              <div className="flex items-center gap-3">
+                <span aria-hidden className="grid size-11 place-items-center rounded-2xl bg-mint">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- kichik SVG logo */}
+                  <img src="/img/map-pin.svg" alt="" width={34} height={42} className="h-6 w-auto" />
+                </span>
+                <div>
+                  <h2 id="principles-h" className="text-lg leading-tight font-semibold tracking-tight">{b.principlesTitle}</h2>
+                  <p className="text-[13px] text-ink-soft">{b.byline}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+              <ul className="mt-5 space-y-3 sm:space-y-4">
+                {b.principles.map((it, i) => {
+                  const Ico = PRINCIPLE_ICONS[i];
+                  return (
+                    <li key={it.title} className="flex items-center gap-3 sm:items-start">
+                      <span aria-hidden className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl bg-mist text-brand-deep">
+                        <Ico className="size-4.5" />
+                      </span>
+                      <div>
+                        <p className="font-semibold">{it.title}</p>
+                        <p className="mt-0.5 text-[14px] leading-relaxed text-ink-soft max-sm:hidden">{it.text}</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-[13px]">
+                {lastUpdate && (
+                  <span className="inline-flex items-center gap-1.5 text-ink-soft">
+                    <CalendarCheck className="size-4" aria-hidden />
+                    <time dateTime={lastUpdate}>{fill(b.lastUpdate, { d: formatDate(lastUpdate, lang) })}</time>
+                  </span>
+                )}
+                <a href={pageHref("certificates", lang)} className="inline-flex items-center gap-1 font-semibold text-brand-deep hover:underline">
+                  {b.docsLink} <ArrowRight className="size-3.5" aria-hidden />
+                </a>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
@@ -110,12 +153,36 @@ export function BlogPostPage({ pg, t, lang }: { pg: LegacyPage; t: Dict; lang: L
               <a href={blogHref} className={`inline-flex items-center gap-2 rounded-full ${style.tone} py-1.5 pr-3.5 pl-1.5 font-semibold transition hover:brightness-95`}>
                 <IconTile name={style.icon} size={26} className="rounded-full!" /> {b.topics[entry.topic]}
               </a>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 text-ink-soft">
-                <Clock3 className="size-4" aria-hidden /> {fill(b.minutes, { n: entry.minutes })}
-              </span>
             </div>
             <h1 className="mt-5 max-w-[24ch] text-[clamp(28px,6.2vw,54px)] leading-[1.08] font-bold tracking-[-0.03em] text-balance">{title}</h1>
             {entry.excerpt && <p className="mt-5 max-w-[60ch] text-lg leading-relaxed text-ink-soft sm:text-xl">{entry.excerpt}</p>}
+
+            {/* Muallif (tahririyat), yangilangan sana, o'qish vaqti */}
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-line pt-5 text-sm">
+              <span className="flex items-center gap-3">
+                <span aria-hidden className="grid size-11 place-items-center rounded-full bg-mint ring-4 ring-mint/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- kichik SVG logo */}
+                  <img src="/img/map-pin.svg" alt="" width={34} height={42} className="h-6 w-auto" />
+                </span>
+                <span>
+                  <span className="flex items-center gap-1 font-semibold">
+                    {b.byline} <BadgeCheck className="size-4 text-brand-deep" aria-hidden />
+                  </span>
+                  <span className="block text-[13px] text-ink-soft">{b.bylineNote}</span>
+                </span>
+              </span>
+              <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-ink-soft">
+                {entry.updated && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarCheck className="size-4" aria-hidden />
+                    <time dateTime={entry.updated}>{fill(b.updated, { d: formatDate(entry.updated, entry.lang) })}</time>
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock3 className="size-4" aria-hidden /> {fill(b.minutes, { n: entry.minutes })}
+                </span>
+              </span>
+            </div>
           </div>
         </header>
 
@@ -146,9 +213,38 @@ export function BlogPostPage({ pg, t, lang }: { pg: LegacyPage; t: Dict; lang: L
             <div className="legacy-prose blog-prose max-w-[740px]" dangerouslySetInnerHTML={{ __html: body }} />
             {body.includes("yt-facade") && <YouTubeFacade />}
 
-            <p className="mt-10 flex max-w-[740px] gap-3 rounded-2xl bg-mist p-4 text-sm leading-relaxed text-ink-soft">
-              <Icon name="stethoscope" size={20} /> {b.disclaimer}
-            </p>
+            {/* Maqola haqida: kim tayyorlagan, ogohlantirish, rasmiy hujjatlar */}
+            <aside aria-labelledby="about-h" className="mt-12 max-w-[740px] overflow-hidden rounded-[24px] ring-1 ring-line">
+              <div className="flex gap-4 bg-mist/60 p-5 sm:p-6">
+                <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white ring-1 ring-line">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- kichik SVG logo */}
+                  <img src="/img/map-pin.svg" alt="" width={34} height={42} className="h-7 w-auto" />
+                </span>
+                <div className="min-w-0">
+                  <h2 id="about-h" className="font-semibold">{b.aboutTitle}</h2>
+                  <p className="mt-1 text-[15px] leading-relaxed text-ink-soft">{b.aboutText}</p>
+                </div>
+              </div>
+              <ul className="divide-y divide-line text-[14px] leading-relaxed">
+                <li className="flex gap-3 px-5 py-3.5 sm:px-6">
+                  <Stethoscope className="mt-0.5 size-4.5 shrink-0 text-brand-deep" aria-hidden />
+                  <span className="text-ink-soft">{b.disclaimer}</span>
+                </li>
+                <li className="flex gap-3 px-5 py-3.5 sm:px-6">
+                  <Siren className="mt-0.5 size-4.5 shrink-0 text-[#c0392b]" aria-hidden />
+                  <span className="font-medium text-[#a52a2a]">{t.booking.emergency}</span>
+                </li>
+                <li className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 sm:px-6">
+                  <span className="flex gap-3">
+                    <ShieldCheck className="mt-0.5 size-4.5 shrink-0 text-brand-deep" aria-hidden />
+                    <span className="text-ink-soft">{t.certificates.company}</span>
+                  </span>
+                  <a href={pageHref("certificates", lang)} className="inline-flex items-center gap-1 font-semibold text-brand-deep hover:underline">
+                    {b.docsLink} <ArrowRight className="size-3.5" aria-hidden />
+                  </a>
+                </li>
+              </ul>
+            </aside>
             <div className="mt-8 flex max-w-[740px] flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
               <a href={blogHref} className="inline-flex items-center gap-2 rounded-full px-1 py-2 font-semibold transition hover:text-brand-deep">
                 <ArrowLeft className="size-5" aria-hidden /> {b.allPosts}

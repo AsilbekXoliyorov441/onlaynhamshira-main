@@ -55,7 +55,8 @@ const uz = {
   hero: {
     titleBefore: "Tibbiy xizmatlar ",
     titleAccent: "uyingizda",
-    titleAfter: " — tez, qulay, xavfsiz!",
+    // H1 — Tilda'dagi bilan aynan bir xil (SEO): "Tibbiy xizmatlar uyingizda - tez, qulay, xavfsiz!"
+    titleAfter: " - tez, qulay, xavfsiz!",
     lead: "Malakali hamshirani tanlang va navbatsiz hamda kutish vaqtisiz uyingizda professional tibbiy yordam oling.",
     perks: ["Tekshirilgan hamshiralar", "30–90 daqiqada yetib keladi", "Xizmatdan so‘ng to‘lov"],
     happyClients: "mamnun mijoz",
@@ -231,6 +232,20 @@ const uz = {
     apply: "Ariza qoldirish",
     details: "Ish shartlari",
     browserLabel: "Mutaxassislar uchun ariza sahifasi",
+    mock: {
+      brand: "Hamkorlik arizasi",
+      step: "2-bosqich / 8",
+      title: "Mutaxassis ma’lumotlari",
+      specialty: "Mutaxassislik",
+      specialties: ["Hamshira", "Shifokor", "Massajchi"],
+      experience: "Ish tajribasi",
+      experienceValue: "3 yildan ortiq",
+      docs: "Hujjatlar",
+      docsValue: ["Diplom", "Sertifikat"],
+      next: "Davom etish",
+      secure: "Ma’lumotlaringiz himoyalangan",
+      resume: "Keyin davom ettirish mumkin",
+    },
   },
   reviews: {
     label: "Mijozlar fikrlari",
@@ -263,11 +278,6 @@ const uz = {
     prev: "Oldingi",
     next: "Keyingi",
     page: "{n}-sahifa",
-    items: [
-      { title: "Onlayn Hamshirada Travmatolog xizmatlari!", text: "Suyak va bo‘g‘im muammolari bilan qiynalayapsizmi? Endi malakali travmatolog qabuliga yozilish uchun uzoq kutish shart emas!" },
-      { title: "Ramazon muborak bo‘lsin!", text: "Ramazon – qalb pokligi, saxovat va rahmat oyi! Ushbu muborak kunlarda duolar qabul, yuraklar tinch, xonadonlaringiz fayzli bo‘lsin!" },
-      { title: "Ro‘za tutishning quyidagi foydalarini bilarmidingiz?", text: "Ro‘za – nafaqat ibodat, balki inson sog‘lig‘i va ruhiyati uchun ham ulkan ne’mat." },
-    ],
   },
   faq: {
     label: "Ko‘p beriladigan savollar",
@@ -301,15 +311,10 @@ const uz = {
   map: {
     directions: "Yo‘nalish",
     regionLabel: "Xarita: {name}, {address}",
-    controls: {
-      "CooperativeGesturesHandler.WindowsHelpText": "Kattalashtirish uchun Ctrl + g‘ildirakdan foydalaning",
-      "CooperativeGesturesHandler.MacHelpText": "Kattalashtirish uchun ⌘ + g‘ildirakdan foydalaning",
-      "CooperativeGesturesHandler.MobileHelpText": "Xaritani ikki barmoq bilan suring",
-      "NavigationControl.ZoomIn": "Kattalashtirish",
-      "NavigationControl.ZoomOut": "Kichiklashtirish",
-      "Map.Title": "Onlayn Hamshira joylashuvi xaritasi",
-      "AttributionControl.ToggleAttribution": "Ma'lumot manbalari",
-    },
+    // Yandex Maps API tili (uz_UZ / ru_RU / en_US)
+    apiLang: "uz_UZ",
+    zoomIn: "Kattalashtirish",
+    zoomOut: "Kichiklashtirish",
   },
   footer: {
     tagline: "Tibbiy xizmatlar uyingizda - tez, qulay, xavfsiz!",
@@ -372,6 +377,7 @@ const uz = {
     label: "Blog",
     lead: "Uyda parvarish, profilaktika va sog‘lom turmush bo‘yicha hamshiralarimiz tajribasiga asoslangan foydali maqolalar.",
     count: "{n} ta maqola",
+    articles: "Foydali maqolalar",
     featured: "Tavsiya etamiz",
     filterLabel: "Mavzu bo‘yicha saralash",
     all: "Barchasi",
@@ -390,6 +396,19 @@ const uz = {
     sideTitle: "Hamshira kerakmi?",
     sideText: "30–90 daqiqada uyingizda. Xizmatdan so‘ng to‘lov.",
     disclaimer: "Maqola ma’lumot uchun. Tashxis va davolash bo‘yicha shifokor bilan maslahatlashing.",
+    updated: "Yangilangan: {d}",
+    lastUpdate: "Oxirgi yangilanish: {d}",
+    byline: "Onlayn Hamshira tahririyati",
+    bylineNote: "Hamshiralarimiz amaliy tajribasi asosida",
+    principlesTitle: "Tahririyat tamoyillari",
+    principles: [
+      { title: "Amaliy tajriba", text: "Maqolalar hamshiralarimizning uyda ko‘rsatgan xizmatlari tajribasiga asoslanadi." },
+      { title: "Mas’uliyatli ma’lumot", text: "Tashxis qo‘ymaymiz va dori buyurmaymiz — davolash bo‘yicha qarorni shifokor qabul qiladi." },
+      { title: "Rasmiy kompaniya", text: "“ONLAYN HAMSHIRA” MCHJ davlat ro‘yxatidan o‘tgan — hujjatlarimizni o‘zingiz tekshira olasiz." },
+    ],
+    docsLink: "Rasmiy hujjatlarimiz",
+    aboutTitle: "Maqola haqida",
+    aboutText: "Maqola Onlayn Hamshira tahririyati tomonidan hamshiralarimiz amaliy tajribasi asosida tayyorlangan va umumiy ma’lumot uchun mo‘ljallangan.",
   },
   contactsPage: {
     eyebrow: "Aloqa",

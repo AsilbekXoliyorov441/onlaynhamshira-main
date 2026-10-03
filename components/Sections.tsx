@@ -5,7 +5,8 @@ import { NewsCarousel } from "./news/NewsCarousel";
 import { NewsCard, type NewsPost } from "./news/NewsCard";
 import { ArrowRight as NewsArrowRight } from "./news/icons";
 import { ArrowRight, Globe, Mail } from "lucide-react";
-import { BENEFIT_ICONS, IMAGES, LINKS, NEWS_IMAGES } from "@/lib/data";
+import { BENEFIT_ICONS, IMAGES, LINKS } from "@/lib/data";
+import type { BlogEntry } from "@/lib/blog-shared";
 import { fill } from "@/lib/i18n/format";
 import type { Dict } from "@/lib/i18n/dictionaries/uz";
 import { localePath, type Locale } from "@/lib/i18n/config";
@@ -172,11 +173,17 @@ export function Safety({ t, lang }: { t: Dict["safety"]; lang: Locale }) {
 // Shundan ko'p yangilik bo'lsa karusel, aks holda oddiy to'r (JS'siz)
 const NEWS_CAROUSEL_FROM = 4;
 
-export function News({ t, lang }: { t: Dict["news"]; lang: Locale }) {
+export function News({ t, topics, entries, lang }: { t: Dict["news"]; topics: Dict["blog"]["topics"]; entries: BlogEntry[]; lang: Locale }) {
   const blog = pageHref("blog", lang);
-  // Mavjud ma'lumot manbai (lib/data NEWS) karta maydonlariga moslanadi; alohida post sahifasi yo'q —
-  // avvalgidek barcha kartalar blogga olib boradi. Kategoriya maydoni yo'q → UI'da ko'rsatilmaydi.
-  const posts: NewsPost[] = t.items.map((n, i) => ({ title: n.title, excerpt: n.text, image: NEWS_IMAGES[i], href: blog }));
+  // Yagona manba — blog: kartalar blog sahifasidagi maqolalar (o'sha tartibda, lib/blog → homeNewsEntries),
+  // har biri o'z maqolasiga olib boradi. Ma'lumot server sahifasida olinadi (Sections client bundle'ga ham tushadi).
+  const posts: NewsPost[] = entries.map((e) => ({
+    title: e.title,
+    excerpt: e.excerpt,
+    image: e.cover!.src,
+    href: e.href,
+    category: topics[e.topic],
+  }));
   const labels = { more: t.more, readMore: t.readMore };
   if (!posts.length) return null;
 
