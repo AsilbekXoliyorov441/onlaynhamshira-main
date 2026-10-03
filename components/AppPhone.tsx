@@ -90,12 +90,12 @@ export function AppPhone({ alt, className = "", priority = false, deferVideo = f
     if (!load || !v || !c) return;
     const gl = setupGL(c);
     if (!gl) return; // poster qoladi
-    let raf = 0, vfc = 0, stop = false;
+    let raf = 0, vfc = 0, stop = true, shown = false;
     const draw = () => {
       if (v.readyState < 2) return;
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, v);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      setReady(true);
+      if (!shown) { shown = true; setReady(true); }
     };
     // requestVideoFrameCallback — faqat yangi kadr kelganda chizadi (15 kadr/s), bo'lmasa rAF
     const hasVfc = "requestVideoFrameCallback" in v;
@@ -105,13 +105,18 @@ export function AppPhone({ alt, className = "", priority = false, deferVideo = f
       if (hasVfc) vfc = v.requestVideoFrameCallback(loop);
       else raf = requestAnimationFrame(loop);
     };
-    loop();
-    v.play().catch(() => {});
-    return () => {
+    const start = () => { if (!stop) return; stop = false; v.play().catch(() => {}); loop(); };
+    const pause = () => {
       stop = true;
+      v.pause();
       cancelAnimationFrame(raf);
       if (hasVfc) v.cancelVideoFrameCallback(vfc);
     };
+    // Faqat ekranda ko'rinib turganda o'ynaydi va chizadi: aks holda skroll paytida ham har kadr
+    // GPU'ga yuklanib, mobil CPU'ni band qilardi (Lighthouse: ~1.8 s skript)
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : pause()));
+    if (wrap.current) io.observe(wrap.current);
+    return () => { io.disconnect(); pause(); };
   }, [load]);
 
   return (
