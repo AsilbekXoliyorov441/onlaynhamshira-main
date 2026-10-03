@@ -1,42 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type Lenis from "lenis";
 import { ArrowUp } from "lucide-react";
-
-let lenis: Lenis | null = null;
 
 /** Modal / menyu ochilganda sahifa scrollini to'xtatish */
 export function setScrollLock(locked: boolean) {
   document.body.style.overflow = locked ? "hidden" : "";
-  if (locked) lenis?.stop();
-  else lenis?.start();
 }
 
 export function scrollToTop() {
-  if (lenis) lenis.scrollTo(0);
-  else window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/** Lenis smooth scroll + scroll paytida paydo bo'lish animatsiyalari */
+/** Scroll paytida paydo bo'lish animatsiyalari + skroll progressi */
 export function SmoothScroll() {
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Sensorli qurilmada tabiiy skroll yaxshiroq — Lenis va uning doimiy rAF sikli kerak emas
-    const touch = window.matchMedia("(hover: none)").matches;
-
-    // Lenis faqat desktopda kerak — mobil bundle'ga tushmasligi uchun dinamik import
-    let cancelled = false;
-    if (!reduced && !touch) import("lenis").then(({ default: Lenis }) => {
-      if (cancelled) return;
-      lenis = new Lenis({
-        autoRaf: true,
-        lerp: 0.1,
-        anchors: { offset: -88 },
-        // Gorizontal karusel va modal ichidagi scroll o'z holicha qoladi
-        prevent: (node) => node.closest?.("[data-lenis-prevent]") != null,
-      });
-    });
+    // Lenis (JS smooth scroll) ataylab ishlatilmaydi: u sahifani kasr piksellarga surib, skroll paytida
+    // matnni "surtilgan"/xira ko'rsatardi. Brauzerning tabiiy skrolli butun piksellarda ishlaydi;
+    // anchor'lar uchun silliqlik va header ofseti CSS'da (scroll-behavior, scroll-padding-top).
 
     // [data-reveal] elementlari ko'rinish maydoniga kirganda animatsiya bilan chiqadi
     const io = new IntersectionObserver(
@@ -66,13 +47,10 @@ export function SmoothScroll() {
     const untrack = trackScrollProgress();
 
     return () => {
-      cancelled = true;
       untrack();
       io.disconnect();
       mo.disconnect();
       cancelAnimationFrame(pending);
-      lenis?.destroy();
-      lenis = null;
     };
   }, []);
 

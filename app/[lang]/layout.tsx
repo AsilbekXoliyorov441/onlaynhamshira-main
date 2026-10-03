@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Onest } from "next/font/google";
-import "lenis/dist/lenis.css";
 import "../globals.css";
 import { DownloadProvider } from "@/components/DownloadModal";
 import { BackToTop, SmoothScroll } from "@/components/Motion";
