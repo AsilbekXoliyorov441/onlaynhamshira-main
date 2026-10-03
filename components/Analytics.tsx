@@ -8,11 +8,12 @@ import { TRACKING } from "@/lib/seo/site";
 //
 // Tezlik uchun: gtag/ym "navbat" funksiyalari va barcha hodisalar (config, init, konversiya) DARHOL
 // yoziladi, og'ir kutubxonalar (gtag.js ~150KB, tag.js ~250KB) esa foydalanuvchining birinchi harakatida
-// (teginish, skroll, sichqoncha, klaviatura) yoki ko'pi bilan ANALYTICS_FALLBACK_MS dan keyin yuklanadi.
-// Kutubxona yuklangach navbatdagi hamma narsa asl vaqt belgisi bilan yuboriladi — hech narsa yo'qolmaydi.
+// (teginish, skroll, sichqoncha, klaviatura) yuklanadi. Kutubxona yuklangach navbatdagi hamma narsa asl vaqt
+// belgisi bilan yuboriladi — hech narsa yo'qolmaydi.
+// Vaqt bo'yicha zaxira (avval 6 s) YO'Q: sekin tarmoqda (PageSpeed Insights) u test tugashidan oldin ishlab,
+// Metrika/GA third-party cookie'lari sabab Best Practices 100 → 77 ga tushardi. Telefonda birinchi teginish,
+// kompyuterda sichqoncha harakati deyarli darhol bo'ladi — tashriflar hisobga tushadi.
 // window.__ohLoadAnalytics() — darhol yuklash (QR sahifalari shuni chaqiradi).
-
-const ANALYTICS_FALLBACK_MS = 6000;
 
 const init = `
 window.dataLayer = window.dataLayer || [];
@@ -44,7 +45,6 @@ ym(${TRACKING.yandexMetrika}, "init", {clickmap:true,trackLinks:true,accurateTra
   }
   window.__ohLoadAnalytics = load;
   evs.forEach(function(e){ addEventListener(e, load, {capture:true, passive:true, once:true}); });
-  setTimeout(load, ${ANALYTICS_FALLBACK_MS});
 })();`;
 
 export function Analytics() {
