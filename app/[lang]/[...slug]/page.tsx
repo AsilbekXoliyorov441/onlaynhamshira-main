@@ -5,9 +5,10 @@ import Header from "@/components/Header";
 import { Footer } from "@/components/Sections";
 import { MobileCTA } from "@/components/MobileCTA";
 import { LegacyCta, QrRedirect } from "@/components/LegacyPage";
-import { OG_LOCALE, hasLocale, localePath } from "@/lib/i18n/config";
+import { LOCALES, OG_LOCALE, hasLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { NAV_KEY_BY_GROUP, pageAlternates, pageHref } from "@/lib/nav";
+import { NAV_KEY_BY_GROUP, pageAlternates, pageHref, translationPaths } from "@/lib/nav";
+import { LEGACY_ROUTES } from "@/lib/seo/routes";
 import { findLegacyPage, legacyPages, slugOf } from "@/lib/seo/legacy";
 import { EXPERT } from "@/lib/expert";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/site";
@@ -23,9 +24,18 @@ import { WHY } from "@/lib/why";
 
 // Eski Tilda sahifalari: har biri build vaqtida statik HTML. Ro'yxatda yo'q yo'l — 404
 export const dynamicParams = false;
-export const generateStaticParams = () => legacyPages().map((pg) => ({ lang: pg.contentLang, slug: slugOf(pg) }));
+export const generateStaticParams = () => {
+  // Til almashtirgich tarjimalari (lib/nav → TRANSLATIONS) faqat mavjud Tilda URL'lariga ko'rsatsin
+  const known = new Set(LEGACY_ROUTES.map((r) => r.path));
+  const bad = translationPaths().filter((p) => !known.has(p));
+  if (bad.length) throw new Error(`lib/nav TRANSLATIONS: unknown paths ${bad.join(", ")}`);
+  return legacyPages().map((pg) => ({ lang: pg.contentLang, slug: slugOf(pg) }));
+};
 
 /** Tilda'dagi QR kodlar: Android → Google Play, iOS → App Store, qolganlar → bosh sahifa */
+// Til almashtirgich: juftligi yo'q sahifada boshqa tillar — bosh sahifa, joriy til — sahifaning o'zi
+const homes = Object.fromEntries(LOCALES.map((l) => [l, localePath(l)])) as Record<Locale, string>;
+
 const QR_TARGETS: Record<string, { android: string; ios: string }> = {
   client: {
     android: "https://play.google.com/store/apps/details?id=uz.teamwork.onlinehamshiraclient&hl=ru&gl=US",
@@ -123,7 +133,7 @@ export default async function LegacyRoute({ params }: PageProps<"/[lang]/[...slu
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-white">
         {t.common.skipToContent}
       </a>
-      <Header lang={lang} t={t.header} common={t.common} home={home} current={NAV_KEY_BY_GROUP[pg.group]} alternates={pageAlternates(pg.path)} />
+      <Header lang={lang} t={t.header} common={t.common} home={home} current={NAV_KEY_BY_GROUP[pg.group]} alternates={{ ...(pageAlternates(pg.path, pg.group) ?? homes), [lang]: pg.path }} />
       {pg.group === "expert" ? (
         // Hamkor sahifasi — Tilda HTML o'rniga alohida dizayn (matnlar lib/expert.ts da, metadata JSON'da)
         <main id="main">

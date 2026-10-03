@@ -44,6 +44,16 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       images: [DEFAULT_OG_IMAGE],
     },
     formatDetection: { telephone: false },
+    // Favicon — onlaynhamshira.uz (Tilda) dagi bilan aynan bir xil fayllar: yorug' mavzuda to'q, qorong'ida och belgi;
+    // telefon/bosh ekran uchun Mobile.png. Fayllar o'zimizda (public/favicon) — Tilda CDN'ga bog'liq emas.
+    icons: {
+      icon: [
+        { url: "/favicon/icon-light-scheme.png", type: "image/png", sizes: "32x32", media: "(prefers-color-scheme: light)" },
+        { url: "/favicon/icon-dark-scheme.png", type: "image/png", sizes: "32x32", media: "(prefers-color-scheme: dark)" },
+        { url: "/favicon/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
+      ],
+      apple: { url: "/favicon/apple-touch-icon.png", type: "image/png" },
+    },
   };
 }
 

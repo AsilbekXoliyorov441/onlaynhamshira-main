@@ -22,12 +22,47 @@ export type NavKey = SectionKey | PageKey;
 export const pageHref = (key: PageKey, lang: Locale) => PAGES[key][lang];
 
 /**
- * Til almashtirgich uchun: sahifaning boshqa tillardagi rasmiy (Tilda/SEO) manzillari.
- * Masalan "/onlayn-hamshira-vs-ananaviy" → en "/online-nursing-vs-traditional". Juftligi yo'q sahifa — undefined
- * (til almashtirgich bosh sahifaga olib boradi). <head>dagi hreflang'ga tegilmaydi.
+ * Bir xil maqola/hujjatning uch tildagi nusxalari (sarlavhalar bo'yicha juftlangan). Yo'llar — Tilda URL'lari
+ * (lib/seo/routes.ts). Ba'zi URL'lar "boshqa til" bo'limida turadi (masalan /home-detox — inglizcha), bu ataylab.
  */
-export const pageAlternates = (path: string): Record<Locale, string> | undefined =>
-  Object.values(PAGES).find((p) => Object.values(p).includes(path));
+const TRANSLATIONS: Record<Locale, string>[] = [
+  // Blog maqolalari
+  { uz: "/blog/hamshira-uyga-chaqirish-toshkent", ru: "/ru/blog/medsestra-na-dom-tashkent", en: "/en/blog/nurse-at-home-tashkent-services-prices" },
+  { uz: "/blog/uyga-hamshira-chaqirish-tibbiy-yordam", ru: "/ru/blog/vyzov-medsestry-na-dom-meditsinskaya-pomoshch", en: "/en/blog/home-nurse-visit-medical-care" },
+  { uz: "/blog/uyda-ukol-qildirish-toshkentda", ru: "/ru/blog/ukoly-na-domu-v-tashkente", en: "/en/blog/injection-service-at-home-tashkent" },
+  { uz: "/blog/ayollar-bolalar-massaji-toshkentda", ru: "/ru/blog/massazh-dlya-zhenshchin-i-detey-v-tashkente", en: "/en/blog/massage-in-tashkent-women-baby" },
+  { uz: "/blog/immunitetni-kotarish-mavsumiy-kasalliklar", ru: "/ru/blog/kak-ukrepit-immunitet-profilaktika", en: "/en/blog/boosting-immunity-preventing-illness" },
+  { uz: "/blog/infeksiyadan-himoyalanish-uy-gigiyenasi", ru: "/ru/blog/kak-zashchititsya-ot-infektsii-doma", en: "/en/blog/home-infection-protection-guide" },
+  { uz: "/blog/kasallikni-oldini-olish-9-kunlik-odatlar", ru: "/ru/blog/profilaktika-9-ezhednevnyh-privychek", en: "/en/blog/daily-habits-to-prevent-illness" },
+  { uz: "/blog/chaqaloq-parvarishi-yangi-onalar-uchun", ru: "/ru/blog/uhod-za-novorozhdyonnym", en: "/en/blog/newborn-care-home-guide" },
+  { uz: "/blog/qon-bosimi-yuqori-bolsa-nima-qilish-kerak", ru: "/blog/chto-delat-esli-povysilos-davlenie", en: "/blog/what-to-do-high-blood-pressure" },
+  { uz: "/uyda-qon-bosimini-olchash-va-nazorat-qilish", ru: "/ru/blog/kak-izmerit-i-kontrolirovat-davlenie-doma", en: "/en/blog/how-to-measure-and-control-blood-pressure-at-home" },
+  { uz: "/blog/uy-sharoitida-detoks", ru: "/detoks-v-domashnih-usloviyah", en: "/home-detox" },
+  { uz: "/blog/operatsiyadan-keyingi-parvarish", ru: "/posleoperatsionnyy-uhod-doma", en: "/postoperative-care-at-home" },
+  { uz: "/saraton-bemor-uyda-parvarish-tavsiyalar", ru: "/podderzhka-onkologicheskih-pacientov-doma", en: "/home-palliative-care-symptom-management" },
+  { uz: "/yotib-qolgan-bemorlarni-uyda-parvarish-qilish", ru: "/ru/uhod-za-lezhachimi-bolnymi-doma", en: "/en/home-care-for-bedridden-patients" },
+  { uz: "/chaqaloqni-uyda-chomiltirish", ru: "/ru/kak-kupat-novorozhdennogo-doma", en: "/en/how-to-bathe-a-newborn-at-home" },
+  { uz: "/onlayn-hamshira-2-0-app-update", ru: "/ru/onlayn-hamshira-2-0-app-update", en: "/en/onlayn-hamshira-2-0-app-update" },
+  { uz: "/uyga-hamshira-chilonzor", ru: "/ru/medsestra-na-dom-chilanzar", en: "/home-nurse-chilanzar" },
+  // Ommaviy oferta shartnomasi
+  { uz: "/hamshirapolitic", ru: "/ru/politichamshira", en: "/nurse-politic" },
+];
+
+// Juftligi yo'q maqola (faqat bir tilda) — boshqa til tanlansa o'sha tilning blogi (bosh sahifa emas)
+const BLOG_GROUPS = new Set(["blogIndex", "blogPost", "article"]);
+
+/**
+ * Til almashtirgich uchun: sahifaning boshqa tillardagi rasmiy (Tilda/SEO) manzillari.
+ * Masalan "/onlayn-hamshira-vs-ananaviy" → en "/online-nursing-vs-traditional". Juftligi yo'q maqola — blog,
+ * qolganlari — undefined (bosh sahifa). <head>dagi hreflang'ga tegilmaydi.
+ */
+export const pageAlternates = (path: string, group?: string): Record<Locale, string> | undefined =>
+  Object.values(PAGES).find((p) => Object.values(p).includes(path)) ??
+  TRANSLATIONS.find((t) => Object.values(t).includes(path)) ??
+  (group && BLOG_GROUPS.has(group) ? PAGES.blog : undefined);
+
+/** Build vaqtida: TRANSLATIONS dagi har bir yo'l haqiqiy sahifa bo'lishi shart (xato yozilsa build to'xtaydi) */
+export const translationPaths = () => TRANSLATIONS.flatMap((t) => Object.values(t));
 
 /** Bosh sahifa bo'limi: bosh sahifaning o'zida "#faq", boshqa sahifalarda "/ru#faq" */
 export const sectionHref = (id: SectionKey, lang: Locale, onHome: boolean) =>
